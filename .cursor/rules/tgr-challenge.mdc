@@ -1,0 +1,64 @@
+---
+description: TGR Laravel 12 challenge rules to produce secure, maintainable, testable code with Blade, Livewire, and jQuery/AJAX
+globs:
+- "**/*.php"
+- "resources/views/**/*.blade.php"
+- "resources/js/**/*.js"
+- "routes/**/*.php"
+- "database/**/*.php"
+- "tests/**/*.php"
+- "**/*.md"
+alwaysApply: true
+---
+
+### TGR Challenge – Agent Code Generation Rules (Laravel 12)
+
+These rules guide how the agent generates code. Keep guidance concise and focused on technology, architecture, security, idempotency, and good practices. Do not restate project scope or implementation steps here.
+
+### Tech constraints
+- Laravel 12, PHP ≥ 8.2; Eloquent; Blade; Livewire (listing/interactions); jQuery/AJAX (cart/actions).
+- Auth via Breeze or Jetstream is acceptable.
+- Dev tools: Laravel Pint (formatting), PHPUnit/Pest (tests), Mailtrap in dev; `Mail::fake()` in tests.
+- JS tooling, if needed: prefer Bun for scripts.
+
+### Architecture principles
+- Controllers thin (orchestration only). Business rules live in `app/Services`.
+- Validation via Form Requests for every input (web and AJAX). Implement `authorize()`.
+- Authorization via Policies; enforce with `authorize()`/middleware. Never rely on UI-only checks.
+- Eloquent models: explicit `$fillable`; typed properties and method signatures.
+- Events for side effects; listeners/jobs queued when work is non-blocking.
+- Keep functions small; use guard clauses; avoid deep nesting.
+
+### Security
+- Enforce Policies for domain access; deny by default when unsure.
+- CSRF required for AJAX; return 419 on invalid token.
+- Prevent mass assignment; never pass raw request arrays to `create()/update()` without whitelisting.
+- Do not expose sensitive fields in JSON. Validate and sanitize all inputs.
+
+### Idempotency and concurrency
+- State-changing endpoints must be idempotent (e.g., payment confirmation). Repeated requests with same key produce the same result.
+- Use DB transactions for multi-step state changes. Apply pessimistic locks when decrementing counters (e.g., stock) to avoid race conditions.
+- Guard against impossible states (e.g., negative stock). On conflict, return HTTP 409 with a structured error.
+
+### API/JSON conventions (AJAX)
+- Success: `{ ok: true, data, message? }`.
+- Error: `{ ok: false, error: { code, message, details? } }` with appropriate HTTP status.
+- JSON endpoints must return `application/json` only (never Blade/HTML). Include CSRF token in AJAX requests.
+
+### Testing (concise)
+- Feature tests for critical flows and policies; Livewire component tests for search/filter; `Mail::fake()` for mail assertions.
+- Use factories/seeders; tests must be deterministic and independent.
+
+### Code style
+- Follow PSR-12; run Pint. Prefer strict types, scalar/return types, and descriptive naming.
+- Log meaningful context; never swallow exceptions; map to proper HTTP responses.
+
+### Frontend guidance
+- Livewire for search/filter and real-time listing; jQuery `$.ajax` for cart actions.
+- Keep JS minimal and modular; no global mutable state. Update UI from JSON responses.
+
+### Assistant process
+- Ask clarifying questions when requirements are ambiguous.
+- Plan before acting and maintain a TODO list for multi-step work.
+- Do not run local servers from the assistant. The developer runs them.
+- Prefer Bun for JS/TS scripts when needed. Keep controllers thin and add types.
