@@ -1,0 +1,103 @@
+<?php
+
+namespace App\Services;
+
+use App\Models\Product;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Str;
+
+class ProductService
+{
+    public function paginate(?string $query = null, ?bool $onlyActive = null, int $perPage = 15): LengthAwarePaginator
+    {
+        $builder = Product::query();
+
+        if ($query !== null && $query !== '') {
+            $builder->where('name', 'like', '%'.$query.'%');
+        }
+
+        if ($onlyActive !== null) {
+            $builder->where('is_active', $onlyActive);
+        }
+
+        return $builder->orderBy('name')->paginate($perPage);
+    }
+
+    public function findBySlug(string $slug): ?Product
+    {
+        return Product::query()->where('slug', $slug)->first();
+    }
+
+    public function create(array $data): Product
+    {
+        $name = $data['name'];
+        $slugBase = isset($data['slug']) && $data['slug'] !== '' ? $data['slug'] : $name;
+
+        $data['slug'] = $this->generateUniqueSlug($slugBase);
+
+        return Product::query()->create([
+            'name' => $data['name'],
+            'slug' => $data['slug'],
+            'price' => $data['price'],
+            'stock' => $data['stock'] ?? 0,
+            'is_active' => $data['is_active'] ?? true,
+        ]);
+    }
+
+    public function update(Product $product, array $data): Product
+    {
+        if (array_key_exists('slug', $data) && $data['slug'] !== null && $data['slug'] !== '') {
+            $incoming = Str::slug($data['slug']);
+            if ($incoming !== $product->slug) {
+                $data['slug'] = $this->generateUniqueSlug($incoming, $product->id);
+            } else {
+                unset($data['slug']);
+            }
+        } else {
+            unset($data['slug']);
+        }
+
+        $product->fill([
+            'name' => $data['name'] ?? $product->name,
+            'price' => $data['price'] ?? $product->price,
+            'stock' => $data['stock'] ?? $product->stock,
+            'is_active' => $data['is_active'] ?? $product->is_active,
+        ]);
+
+        $product->save();
+
+        return $product->refresh();
+    }
+
+    public function delete(Product $product): void
+    {
+        $product->delete();
+    }
+
+    public function toggleActive(Product $product, ?bool $force = null): Product
+    {
+        $product->is_active = $force ?? !$product->is_active;
+        $product->save();
+
+        return $product->refresh();
+    }
+
+    protected function generateUniqueSlug(string $base, ?int $ignoreId = null): string
+    {
+        $slug = Str::slug($base);
+        $original = $slug;
+        $i = 2;
+
+        while (
+            Product::query()
+                ->where('slug', $slug)
+                ->when($ignoreId, fn ($q) => $q->whereKeyNot($ignoreId))
+                ->exists()
+        ) {
+            $slug = $original.'-'.$i;
+            $i++;
+        }
+
+        return $slug;
+    }
+}

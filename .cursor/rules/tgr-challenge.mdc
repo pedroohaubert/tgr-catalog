@@ -10,6 +10,7 @@ globs:
 - "**/*.md"
 alwaysApply: true
 ---
+Always when possible use php arisan comands to do stuff
 
 ### TGR Challenge – Agent Code Generation Rules (Laravel 12)
 

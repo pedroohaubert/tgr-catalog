@@ -65,17 +65,17 @@
 
 ### 4) Serviços de domínio e regras de negócio (app/Services)
 
-- [ ] `ProductService`
-  - [ ] CRUD de produto com validações e slug único
-- [ ] `CartService` (em sessão)
-  - [ ] Adicionar/remover/atualizar itens, calcular total, contar itens
-  - [ ] Impedir adicionar quantidade superior ao estoque
-- [ ] `OrderService`
-  - [ ] Criar pedido a partir do carrinho (transação)
-  - [ ] Confirmar pagamento (idempotente):
-    - [ ] Recalcular total e travar linhas de produto (`for update`)
-    - [ ] Debitar estoque (nunca negativo); conflito => HTTP 409
-    - [ ] Disparar evento `OrderPaid`
+- [X] `ProductService`
+  - [X] CRUD de produto com validações e slug único
+- [X] `CartService` (em sessão)
+  - [X] Adicionar/remover/atualizar itens, calcular total, contar itens
+  - [X] Impedir adicionar quantidade superior ao estoque
+- [X] `OrderService`
+  - [X] Criar pedido a partir do carrinho (transação)
+  - [X] Confirmar pagamento (idempotente):
+    - [X] Recalcular total e travar linhas de produto (`for update`)
+    - [X] Debitar estoque (nunca negativo); conflito => HTTP 409
+    - [X] Disparar evento `OrderPaid`
 
 ### 5) Validações (Form Requests) e DTOs
 
