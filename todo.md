@@ -4,54 +4,52 @@
 
 ### 0) Preparação do repositório e ambiente
 
-- [ ] Criar repositório Git (GitHub) e inicializar localmente
-  - [ ] `git init` no diretório do projeto
-  - [ ] Criar `.gitignore` (usar padrão Laravel + IDE)
-  - [ ] Criar branch `main`
-- [ ] Escolher banco de dados: PostgreSQL (recomendado) ou MySQL
-  - [ ] Criar database `tgr_catalog` e usuário com permissões
-  - [ ] Definir fuso horário, collation/charset (UTF-8)
-- [ ] Preparar PHP e extensões (>= 8.2), Composer
-  - [ ] Habilitar/extensões: pdo, pdo_mysql ou pdo_pgsql, mbstring, intl, openssl
+- [X] Criar repositório Git (GitHub) e inicializar localmente
+  - [X] `git init` no diretório do projeto
+  - [X] Criar `.gitignore` (usar padrão Laravel + IDE)
+  - [X] Criar branch `main`
+- [X] Escolher banco de dados: SQLite
+- [X] Preparar PHP e extensões (>= 8.2), Composer
+  - [X] Habilitar/extensões: pdo, pdo_mysql ou pdo_pgsql, mbstring, intl, openssl
 - [ ] Configurar Mailtrap para dev
   - [ ] Criar inbox e obter credenciais SMTP
 
 ### 1) Bootstrap do projeto Laravel 12
 
-- [ ] Criar projeto: `composer create-project laravel/laravel:^12 tgr-catalog`
-- [ ] Entrar no projeto e configurar `.env`
-  - [ ] `APP_NAME`, `APP_URL`
-  - [ ] `DB_CONNECTION`, `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`
+- [X] Criar projeto: `composer create-project laravel/laravel:^12 tgr-catalog`
+- [X] Entrar no projeto e configurar `.env`
+  - [X] `APP_NAME`, `APP_URL`
+  - [X] `DB_CONNECTION`, `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`
   - [ ] `MAIL_MAILER=smtp`, `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_ENCRYPTION`, `MAIL_FROM_ADDRESS`, `MAIL_FROM_NAME`
-- [ ] Subir chaves: `php artisan key:generate`
-- [ ] Configurar `pint` e scripts Composer (format/check):
-  - [ ] Adicionar `laravel/pint` como dev
-  - [ ] Scripts: `format` e `lint`
-- [ ] Instalar Breeze (ou Jetstream) para autenticação
-  - [ ] `composer require laravel/breeze --dev`
-  - [ ] `php artisan breeze:install blade`
-  - [ ] `php artisan migrate`
+- [X] Subir chaves: `php artisan key:generate`
+- [X] Configurar `pint` e scripts Composer (format/check):
+  - [X] Adicionar `laravel/pint` como dev
+  - [X] Scripts: `format` e `lint`
+- [X] Instalar Breeze (ou Jetstream) para autenticação
+  - [X] `composer require laravel/breeze --dev`
+  - [X] `php artisan breeze:install blade`
+  - [X] `php artisan migrate`
 
 ### 2) Modelagem e migrations
 
-- [ ] Definir entidades e atributos
-  - [ ] Produto: `name`, `slug` (único), `price` (decimal), `stock` (int >=0), `is_active` (bool)
-  - [ ] Order: `code` (uuid), `user_id` (fk), `total` (decimal), `status` (enum: pending, paid, canceled)
-  - [ ] OrderItem: `order_id` (fk), `product_id` (fk), `quantity` (int >0), `unit_price` (decimal)
-- [ ] Criar migrations com índices/uniques/constraints
-  - [ ] Índice/unique: `products.slug`
-  - [ ] Índices: `orders.user_id`, `order_items.order_id`, `order_items.product_id`
-  - [ ] Constraints: FKs com `cascade on delete` em itens
-  - [ ] Check constraints (quando suportado) para `quantity > 0`, `stock >= 0`
-  - [ ] Enum status via `string` + validation, ou `enum` nativo quando suportado
-- [ ] Models Eloquent com `$fillable` explícito e casts
-  - [ ] `Product` ($fillable, casts: price decimal:2, is_active bool)
-  - [ ] `Order` ($fillable, casts: total decimal:2, status string, code uuid)
-  - [ ] `OrderItem` ($fillable, casts: unit_price decimal:2)
-- [ ] Factories e seeders mínimos
-  - [ ] `ProductFactory` com `slug` único
-  - [ ] Seeder de usuários: Admin e Cliente (dados do desafio)
-  - [ ] Seeder de produtos exemplo
+- [X] Definir entidades e atributos
+  - [X] Produto: `name`, `slug` (único), `price` (decimal), `stock` (int >=0), `is_active` (bool)
+  - [X] Order: `code` (uuid), `user_id` (fk), `total` (decimal), `status` (enum: pending, paid, canceled)
+  - [X] OrderItem: `order_id` (fk), `product_id` (fk), `quantity` (int >0), `unit_price` (decimal)
+- [X] Criar migrations com índices/uniques/constraints
+  - [X] Índice/unique: `products.slug`
+  - [X] Índices: `orders.user_id`, `order_items.order_id`, `order_items.product_id`
+  - [X] Constraints: FKs com `cascade on delete` em itens
+  - [X] Check constraints (quando suportado) para `quantity > 0`, `stock >= 0`
+  - [X] Enum status via `string` + validation, ou `enum` nativo quando suportado
+- [X] Models Eloquent com `$fillable` explícito e casts
+  - [X] `Product` ($fillable, casts: price decimal:2, is_active bool)
+  - [X] `Order` ($fillable, casts: total decimal:2, status string, code uuid)
+  - [X] `OrderItem` ($fillable, casts: unit_price decimal:2)
+- [X] Factories e seeders mínimos
+  - [X] `ProductFactory` com `slug` único
+  - [X] Seeder de usuários: Admin e Cliente (dados do desafio)
+  - [X] Seeder de produtos exemplo
 
 ### 3) Autorização e perfis
 
