@@ -53,13 +53,14 @@
 
 ### 3) Autorização e perfis
 
-- [ ] Adicionar coluna `role` em `users` (enum: admin, client)
-  - [ ] Migration + cast + accessor helper `isAdmin()`
-  - [ ] Popular via seeder: admin/cliente
-- [ ] Policies
-  - [ ] `OrderPolicy`: cliente só acessa os próprios pedidos
-  - [ ] `ProductPolicy`/`OrderPolicy`: admin pode gerenciar produtos e pedidos
-  - [ ] Registrar no `AuthServiceProvider`
+- [X] Adicionar coluna `role` em `users` (enum: admin, client)
+
+  - [X] Migration + cast + accessor helper `isAdmin()`
+  - [X] Popular via seeder: admin/cliente
+- [X] Policies
+
+  - [X] `OrderPolicy`: cliente só acessa os próprios pedidos
+  - [X] `ProductPolicy`/`OrderPolicy`: admin pode gerenciar produtos e pedidos
   - [ ] Aplicar via `authorize()` nos controllers/rotas
 
 ### 4) Serviços de domínio e regras de negócio (app/Services)
