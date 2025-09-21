@@ -20,7 +20,7 @@
 - [X] Entrar no projeto e configurar `.env`
   - [X] `APP_NAME`, `APP_URL`
   - [X] `DB_CONNECTION`, `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`
-  - [ ] `MAIL_MAILER=smtp`, `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_ENCRYPTION`, `MAIL_FROM_ADDRESS`, `MAIL_FROM_NAME`
+  - [X] `MAIL_MAILER=smtp`, `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_ENCRYPTION`, `MAIL_FROM_ADDRESS`, `MAIL_FROM_NAME`
 - [X] Subir chaves: `php artisan key:generate`
 - [X] Configurar `pint` e scripts Composer (format/check):
   - [X] Adicionar `laravel/pint` como dev
@@ -61,7 +61,7 @@
 
   - [X] `OrderPolicy`: cliente só acessa os próprios pedidos
   - [X] `ProductPolicy`/`OrderPolicy`: admin pode gerenciar produtos e pedidos
-  - [ ] Aplicar via `authorize()` nos controllers/rotas
+  - [X] Aplicar via `authorize()` nos controllers/rotas
 
 ### 4) Serviços de domínio e regras de negócio (app/Services)
 
@@ -87,24 +87,24 @@
 
 ### 6) Controllers (finos) e rotas
 
-- [ ] Rotas web
-  - [ ] Públicas: `/produtos` (listagem Livewire), `/produtos/{slug}` (detalhe)
-  - [ ] Carrinho (AJAX): `POST /carrinho/add`, `POST /carrinho/remove`, `POST /carrinho/update`
-  - [ ] Checkout: `POST /checkout` (cliente) => cria pedido
-  - [ ] Pedidos: `GET /me/pedidos` (cliente), `GET /admin/pedidos`, `POST /admin/pedidos/{order}/pay`
-- [ ] Controllers
-  - [ ] `ProductController`: detalhe produto
-  - [ ] `CartController`: add/remove/update (JSON)
-  - [ ] `CheckoutController`: criar pedido
-  - [ ] `Admin/OrderController`: listar e pagar pedido
+- [X] Rotas web
+  - [X] Públicas: `/produtos` (listagem Livewire), `/produtos/{slug}` (detalhe)
+  - [X] Carrinho (AJAX): `POST /carrinho/add`, `POST /carrinho/remove`, `POST /carrinho/update`
+  - [X] Checkout: `POST /checkout` (cliente) => cria pedido
+  - [X] Pedidos: `GET /me/pedidos` (cliente), `GET /admin/pedidos`, `POST /admin/pedidos/{order}/pay`
+- [X] Controllers
+  - [X] `ProductController`: detalhe produto
+  - [X] `CartController`: add/remove/update (JSON)
+  - [X] `CheckoutController`: criar pedido
+  - [X] `Admin/OrderController`: listar e pagar pedido
 
 ### 7) Eventos, listeners e e-mails
 
-- [ ] Evento `OrderPaid`
-- [ ] Listener `SendOrderConfirmation`
-  - [ ] Enviar e-mail (Mailtrap) com resumo do pedido
-  - [ ] Disparar via queue (job) em produção; em dev, sync ok; em testes `Mail::fake()`
-- [ ] Mailable `OrderPaidMail`
+- [X] Evento `OrderPaid`
+- [X] Listener `SendOrderConfirmation`
+  - [X] Enviar e-mail (Mailtrap) com resumo do pedido
+  - [X] Disparar via queue (job) em produção; em dev, sync ok; em testes `Mail::fake()`
+- [X] Mailable `OrderPaidMail`
 
 ### 8) Frontend – Blade + Livewire
 
@@ -129,10 +129,10 @@
 
 ### 10) Segurança
 
-- [ ] Aplicar Policies em controllers e rotas (middleware `can`)
+- [X] Aplicar Policies em controllers e rotas (middleware `can`)
 - [ ] CSRF obrigatório em AJAX (419 em inválido)
-- [ ] Evitar mass assignment (usar `$fillable` e serviços)
-- [ ] Sanitizar/validar todos inputs via Form Requests
+- [X] Evitar mass assignment (usar `$fillable` e serviços)
+- [X] Sanitizar/validar todos inputs via Form Requests
 - [ ] Não expor campos sensíveis em JSON
 
 ### 11) Testes
@@ -148,7 +148,7 @@
 
 ### 12) Qualidade e ferramentas
 
-- [ ] Rodar migrations e seeders (`php artisan migrate --seed`)
+- [X] Rodar migrations e seeders (`php artisan migrate --seed`)
 - [ ] Rodar Pint (format)
 - [ ] Verificar logs/erros; mapear exceções para HTTP correto
 
