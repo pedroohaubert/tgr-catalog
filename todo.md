@@ -79,11 +79,11 @@
 
 ### 5) Validações (Form Requests) e DTOs
 
-- [ ] `ProductStoreRequest` / `ProductUpdateRequest`
-  - [ ] name: required|string; price: required|numeric|min:0; stock: int|min:0; is_active: bool; slug: sometimes|unique
-- [ ] `CartAddRequest` (AJAX): product_id exists, quantity int|min:1
-- [ ] `OrderCheckoutRequest`: sem payload (usa sessão) mas `authorize()` cliente autenticado
-- [ ] `OrderPayRequest` (admin): status target = paid
+- [X] `ProductStoreRequest` / `ProductUpdateRequest`
+  - [X] name: required|string; price: required|numeric|min:0; stock: int|min:0; is_active: bool; slug: sometimes|unique
+- [X] `CartAddRequest` (AJAX): product_id exists, quantity int|min:1
+- [X] `OrderCheckoutRequest`: sem payload (usa sessão) mas `authorize()` cliente autenticado
+- [X] `OrderPayRequest` (admin): status target = paid
 
 ### 6) Controllers (finos) e rotas
 
