@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\ApiController;
+use App\Http\Requests\Order\OrderCancelRequest;
 use App\Http\Requests\Order\OrderIndexRequest;
 use App\Http\Requests\Order\OrderPayRequest;
 use App\Models\Order;
@@ -13,16 +14,19 @@ use Throwable;
 
 class OrderController extends ApiController
 {
-    public function index(OrderIndexRequest $request): JsonResponse
+    public function index(OrderIndexRequest $request)
     {
         $paginator = Order::query()
             ->with(['user', 'items.product'])
             ->latest('id')
             ->paginate(20);
 
-        // FUTURE: This will render the admin orders page listing with filters and pagination.
-        // Example: return view('admin.orders.index', ['paginator' => $paginator]);
-        return $this->jsonSuccess($this->paginateOrders($paginator));
+        /** @var \Illuminate\Http\Request $request */
+        if ($request->expectsJson()) {
+            return $this->jsonSuccess($this->paginateOrders($paginator));
+        }
+
+        return view('admin.orders.index', ['orders' => $paginator]);
     }
 
     public function pay(OrderPayRequest $request, Order $order, OrderService $orders): JsonResponse
@@ -33,6 +37,18 @@ class OrderController extends ApiController
             // FUTURE: After confirming payment, redirect back to order detail page with success flash.
             // Example: return redirect()->route('admin.orders.show', $updated)->with('status', 'paid');
             return $this->jsonSuccess(['order' => $this->transformOrder($updated)], 'Pagamento confirmado.');
+        } catch (Throwable $e) {
+            return $this->handleDomainException($e);
+        }
+    }
+
+    public function cancel(OrderCancelRequest $request, Order $order, OrderService $orders): JsonResponse
+    {
+        try {
+            $dto = \App\DTOs\OrderCancelData::fromRequest($request);
+            $updated = $orders->cancel($order);
+
+            return $this->jsonSuccess(['order' => $this->transformOrder($updated)], 'Pedido cancelado.');
         } catch (Throwable $e) {
             return $this->handleDomainException($e);
         }

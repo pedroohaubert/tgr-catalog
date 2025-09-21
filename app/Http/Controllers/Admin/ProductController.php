@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\DTOs\ProductStoreData;
 use App\DTOs\ProductUpdateData;
 use App\Http\Controllers\ApiController;
-use App\Http\Requests\Product\ProductDeleteRequest;
 use App\Http\Requests\Product\ProductIndexRequest;
 use App\Http\Requests\Product\ProductShowRequest;
 use App\Http\Requests\Product\ProductStoreRequest;
@@ -14,11 +13,15 @@ use App\Http\Requests\Product\ProductUpdateRequest;
 use App\Models\Product;
 use App\Services\ProductService;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 
 class ProductController extends ApiController
 {
-    public function index(ProductIndexRequest $request, ProductService $products): JsonResponse
+    use AuthorizesRequests;
+
+    public function index(ProductIndexRequest $request, ProductService $products)
     {
         $data = $request->validated();
         $query = (string) ($data['q'] ?? '');
@@ -31,34 +34,59 @@ class ProductController extends ApiController
             perPage: $perPage,
         );
 
-        // FUTURE: This will render the admin products page (Blade) with server-provided props.
-        // Example: return view('admin.products.index', ['paginator' => $paginator]);
-        return $this->jsonSuccess($this->paginateResponse($paginator));
+        // Return view for browser requests, JSON for AJAX
+        /** @var \Illuminate\Http\Request $request */
+        if ($request->expectsJson()) {
+            return $this->jsonSuccess($this->paginateResponse($paginator));
+        }
+
+        return view('admin.products.index', ['products' => $paginator]);
     }
 
-    public function show(ProductShowRequest $request, Product $product): JsonResponse
+    public function show(ProductShowRequest $request, Product $product)
     {
-        // FUTURE: This will render the admin product detail page with edit controls.
-        // Example: return view('admin.products.show', ['product' => $product]);
-        return $this->jsonSuccess($this->transformProduct($product));
+        // Redirect to edit page for admin
+        return redirect()->route('admin.products.edit', $product);
     }
 
-    public function store(ProductStoreRequest $request, ProductService $products): JsonResponse
+    public function create()
+    {
+        $this->authorize('create', Product::class);
+
+        return view('admin.products.create');
+    }
+
+    public function edit(Product $product)
+    {
+        $this->authorize('update', $product);
+
+        return view('admin.products.edit', compact('product'));
+    }
+
+    public function store(ProductStoreRequest $request, ProductService $products): JsonResponse|RedirectResponse
     {
         $dto = ProductStoreData::fromRequest($request);
         $created = $products->create($dto->toArray());
 
-        // FUTURE: Return 302 redirect to admin product detail page instead of JSON.
-        // Example: return redirect()->route('admin.products.show', $created);
+        /** @var \Illuminate\Http\Request $request */
+        if ($request->expectsJson() === false) {
+            return redirect()->route('admin.products.index')->with('status', 'Produto criado.');
+        }
+
         return $this->jsonSuccess(['product' => $this->transformProduct($created)], 'Produto criado.', 201);
     }
 
-    public function update(ProductUpdateRequest $request, Product $product, ProductService $products): JsonResponse
+    public function update(ProductUpdateRequest $request, Product $product, ProductService $products)
     {
         $dto = ProductUpdateData::fromRequest($request);
         $updated = $products->update($product, $dto->toArray());
 
-        return $this->jsonSuccess(['product' => $this->transformProduct($updated)], 'Produto atualizado.');
+        /** @var \Illuminate\Http\Request $request */
+        if ($request->expectsJson()) {
+            return $this->jsonSuccess(['product' => $this->transformProduct($updated)], 'Produto atualizado.');
+        }
+
+        return redirect()->route('admin.products.index')->with('status', 'Produto atualizado com sucesso.');
     }
 
     public function toggleActive(ProductToggleActiveRequest $request, Product $product, ProductService $products): JsonResponse
@@ -68,17 +96,6 @@ class ProductController extends ApiController
         $updated = $products->toggleActive($product, $force);
 
         return $this->jsonSuccess(['product' => $this->transformProduct($updated)], 'Status atualizado.');
-    }
-
-    public function destroy(ProductDeleteRequest $request, Product $product, ProductService $products): JsonResponse
-    {
-        if ($product->items()->exists()) {
-            return $this->jsonError('conflict', 'Produto possui itens de pedido e não pode ser excluído.', null, 409);
-        }
-
-        $products->delete($product);
-
-        return $this->jsonSuccess(null, 'Produto removido.');
     }
 
     private function paginateResponse(LengthAwarePaginator $paginator): array
@@ -97,14 +114,11 @@ class ProductController extends ApiController
     private function transformProduct(object $product): array
     {
         return [
-            'id' => (int) $product->id,
             'name' => (string) $product->name,
             'slug' => (string) $product->slug,
             'price' => (float) $product->price,
             'stock' => (int) $product->stock,
             'is_active' => (bool) $product->is_active,
-            'created_at' => optional($product->created_at)?->toISOString(),
-            'updated_at' => optional($product->updated_at)?->toISOString(),
         ];
     }
 }

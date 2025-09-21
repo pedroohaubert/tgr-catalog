@@ -4,12 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 
 class OrderController extends ApiController
 {
-    public function index(): JsonResponse
+    public function index()
     {
         $paginator = Order::query()
             ->where('user_id', Auth::id())
@@ -17,9 +16,7 @@ class OrderController extends ApiController
             ->latest('id')
             ->paginate(15);
 
-        // FUTURE: This will render the user's orders page instead of returning JSON.
-        // Example: return view('orders.index', ['paginator' => $paginator]);
-        return $this->jsonSuccess($this->paginateOrders($paginator));
+        return view('orders.index', ['paginator' => $paginator]);
     }
 
     private function paginateOrders(LengthAwarePaginator $paginator): array

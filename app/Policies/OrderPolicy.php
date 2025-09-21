@@ -45,4 +45,10 @@ class OrderPolicy
     {
         return false;
     }
+
+    public function cancel(User $user, Order $order): bool
+    {
+        // Cliente pode cancelar seus próprios pedidos pendentes
+        return $order->user_id === $user->id && $order->status === 'pending';
+    }
 }

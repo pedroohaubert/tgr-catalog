@@ -137,4 +137,29 @@ class OrderService
 
         return $updated;
     }
+
+    /**
+     * Cancela um pedido (idempotente).
+     * - Só permite cancelar pedidos pendentes.
+     * - Pedidos pagos não podem ser cancelados.
+     */
+    public function cancel(Order $order): Order
+    {
+        if ($order->status === 'canceled') {
+            return $order->load('items');
+        }
+
+        if ($order->status === 'paid') {
+            throw new LogicException('Pedido pago não pode ser cancelado.');
+        }
+
+        if ($order->status !== 'pending') {
+            throw new LogicException('Pedido não pode ser cancelado no status atual.');
+        }
+
+        $order->status = 'canceled';
+        $order->save();
+
+        return $order->refresh()->load('items');
+    }
 }

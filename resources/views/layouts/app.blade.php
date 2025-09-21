@@ -13,6 +13,105 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @livewireStyles
+        
+        <!-- Global utility functions (needed by admin pages) -->
+        <script>
+            // Toast notification system
+            let toastTimeout;
+            function showToast(message, type = 'success') {
+                hideToast();
+
+                const toast = document.createElement('div');
+                toast.id = 'cart-toast';
+                toast.className = `fixed bottom-4 right-4 z-[2000] p-4 rounded-md shadow-lg transition-all duration-300 transform translate-y-[100%] ${
+                    type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+                }`;
+                toast.textContent = message;
+
+                document.body.appendChild(toast);
+
+                // Trigger animation
+                setTimeout(() => {
+                    toast.classList.remove('translate-y-[100%]');
+                }, 10);
+
+                // Auto hide after 3 seconds
+                toastTimeout = setTimeout(() => {
+                    hideToast();
+                }, 3000);
+
+                // Allow manual dismiss
+                toast.addEventListener('click', hideToast);
+            }
+
+            function hideToast() {
+                clearTimeout(toastTimeout);
+                const toast = document.getElementById('cart-toast');
+                if (toast) {
+                    toast.classList.add('translate-y-[100%]');
+                    setTimeout(() => {
+                        if (toast.parentNode) {
+                            toast.parentNode.removeChild(toast);
+                        }
+                    }, 300);
+                }
+            }
+
+            // Global error handler for AJAX requests
+            window.handleAjaxError = function(xhr, defaultMessage = 'Erro ao processar requisição') {
+                let msg = defaultMessage;
+                
+                if (xhr.status === 401) {
+                    msg = 'Sessão expirada. Por favor, faça login novamente';
+                    setTimeout(() => window.location.href = '/login', 2000);
+                } else if (xhr.status === 403) {
+                    msg = 'Sem permissão para realizar esta ação';
+                } else if (xhr.status === 404) {
+                    msg = 'Recurso não encontrado';
+                } else if (xhr.status === 409) {
+                    // Conflito - geralmente relacionado a regras de negócio
+                    if (xhr.responseJSON?.error?.details) {
+                        const details = xhr.responseJSON.error.details;
+                        if (details.insufficient_stock && Array.isArray(details.insufficient_stock)) {
+                            const products = details.insufficient_stock.map(p => 
+                                `${p.product} (disponível: ${p.available}, necessário: ${p.required})`
+                            ).join(', ');
+                            msg = `Estoque insuficiente: ${products}`;
+                        } else {
+                            msg = xhr.responseJSON.error.message || defaultMessage;
+                        }
+                    } else {
+                        msg = xhr.responseJSON?.error?.message || 'Conflito ao processar requisição';
+                    }
+                } else if (xhr.status === 419) {
+                    msg = 'Token CSRF inválido. Por favor, recarregue a página';
+                    setTimeout(() => window.location.reload(), 2000);
+                } else if (xhr.status === 422) {
+                    // Erro de validação
+                    if (xhr.responseJSON?.errors) {
+                        const errors = Object.values(xhr.responseJSON.errors).flat();
+                        msg = errors.join('. ') || 'Dados inválidos';
+                    } else if (xhr.responseJSON?.message) {
+                        msg = xhr.responseJSON.message;
+                    } else {
+                        msg = 'Dados inválidos. Verifique as informações e tente novamente';
+                    }
+                } else if (xhr.status === 429) {
+                    msg = 'Muitas requisições. Por favor, aguarde um momento';
+                } else if (xhr.status === 500) {
+                    msg = 'Erro interno do servidor. Por favor, tente novamente';
+                } else if (xhr.status === 503) {
+                    msg = 'Serviço temporariamente indisponível. Tente novamente em alguns instantes';
+                } else if (xhr.responseJSON?.error?.message) {
+                    msg = xhr.responseJSON.error.message;
+                } else if (xhr.responseJSON?.message) {
+                    msg = xhr.responseJSON.message;
+                }
+                
+                return msg;
+            };
+        </script>
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">
@@ -32,5 +131,216 @@
                 {{ $slot }}
             </main>
         </div>
+        
+        @livewireScripts
+
+        <!-- Cart configuration - will be initialized by JavaScript -->
+        <script>
+            // Global cart configuration - will be initialized after jQuery is loaded
+            window.initCart = function() {
+                // Global cart configuration
+                window.cartConfig = {
+                    routes: {
+                        summary: '{{ route('cart.summary') }}',
+                        add: '{{ route('cart.add') }}',
+                        update: '{{ route('cart.update') }}',
+                        remove: '{{ route('cart.remove') }}',
+                        clear: '{{ route('cart.clear') }}',
+                        checkout: '{{ route('checkout.store') }}'
+                    },
+                    csrfToken: document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                };
+
+                // Lightweight global state (kept in sync from server responses)
+                window.cartState = {
+                    count: 0,
+                    itemsById: {}
+                };
+
+                // Global cart helper functions
+                window.cartHelpers = {
+                    inFlight: {},
+
+                    post: function(url, data) {
+                        return $.ajax({
+                            url: url,
+                            type: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': window.cartConfig.csrfToken,
+                                'Accept': 'application/json'
+                            },
+                            contentType: 'application/json',
+                            data: JSON.stringify(data)
+                        });
+                    },
+
+                    get: function(url) {
+                        return $.ajax({
+                            url: url,
+                            type: 'GET',
+                            headers: {
+                                'Accept': 'application/json'
+                            }
+                        });
+                    },
+
+                    setState: function(data) {
+                        window.cartState.count = data?.count ?? 0;
+                        window.cartState.itemsById = {};
+                        if (Array.isArray(data?.items)) {
+                            data.items.forEach(function(item) {
+                                window.cartState.itemsById[item.product_id] = item;
+                            });
+                        }
+                    },
+
+                    updateBadge: function(count) {
+                        const $badge = $('#cart-count-badge');
+                        if ($badge.length) {
+                            $badge.text(count);
+                            $badge.toggle(count > 0);
+                        }
+                    },
+
+                    updateUI: function(data) {
+                        // Update local state and badge immediately
+                        this.setState(data);
+                        this.updateBadge(window.cartState.count);
+
+                        // Notify Alpine cart component(s)
+                        window.dispatchEvent(new CustomEvent('cart:updated', { detail: data }));
+                    },
+
+                    fetchSummary: function() {
+                        return this.get(window.cartConfig.routes.summary).done((response) => {
+                            if (response?.ok && response.data) {
+                                this.updateUI(response.data);
+                            }
+                        });
+                    }
+                };
+
+                // Cart event handlers
+                $(document).ready(function() {
+                    // Ensure badge is correct on every page load
+                    window.cartHelpers.fetchSummary();
+
+                    // Add to cart (product detail page)
+                    $(document).on('submit', '#add-to-cart-form', function(e) {
+                        e.preventDefault();
+                        const $form = $(this);
+                        const $btn = $form.find('button[type=submit]');
+                        const $feedback = $('#add-to-cart-feedback');
+
+                        $btn.prop('disabled', true);
+                        if ($feedback.length) {
+                            $feedback.removeClass('text-red-600 text-green-700').text('');
+                        }
+                        hideToast();
+
+                        window.cartHelpers.post(window.cartConfig.routes.add, {
+                            product_id: parseInt($form.find('[name=product_id]').val(), 10),
+                            quantity: parseInt($form.find('[name=quantity]').val(), 10)
+                        }).done(function(response) {
+                            if (response.ok && response.data) {
+                                showToast('Produto adicionado ao carrinho!');
+                                // Reset quantity to 1
+                                $form.find('[name=quantity]').val(1);
+                                // Update UI and optionally open dropdown
+                                window.cartHelpers.updateUI(response.data);
+                                window.dispatchEvent(new CustomEvent('cart:open'));
+                            } else {
+                                showToast(response.error?.message || 'Erro ao adicionar', 'error');
+                            }
+                        }).fail(function(xhr) {
+                            const msg = window.handleAjaxError(xhr, 'Erro ao adicionar ao carrinho');
+                            showToast(msg, 'error');
+                        }).always(function() {
+                            $btn.prop('disabled', false);
+                        });
+                    });
+
+                    // Update quantity
+                    $(document).on('click', '.cart-qty', function(e) {
+                        e.preventDefault();
+                        const $btn = $(this);
+                        const productId = parseInt($btn.data('product-id'), 10);
+                        const action = $btn.data('action');
+
+                        const key = 'p' + productId;
+                        if (window.cartHelpers.inFlight[key]) {
+                            return;
+                        }
+                        window.cartHelpers.inFlight[key] = true;
+                        $('.cart-qty[data-product-id="' + productId + '"]').prop('disabled', true);
+
+                        // Use last known state (fallback to DOM if not present yet)
+                        const currentFromState = window.cartState.itemsById[productId]?.quantity;
+                        const $qty = $btn.siblings('span');
+                        const currentFromDom = parseInt($qty.text(), 10) || 1;
+                        const current = Number.isInteger(currentFromState) ? currentFromState : currentFromDom;
+                        const newQty = action === 'increase' ? current + 1 : Math.max(0, current - 1);
+
+                        window.cartHelpers.post(window.cartConfig.routes.update, {
+                            product_id: productId,
+                            quantity: newQty
+                        }).done(function(response) {
+                            if (response.ok && response.data) {
+                                window.cartHelpers.updateUI(response.data);
+                            }
+                        }).fail(function(xhr) {
+                            const msg = window.handleAjaxError(xhr, 'Erro ao atualizar quantidade');
+                            showToast(msg, 'error');
+                        }).always(function() {
+                            delete window.cartHelpers.inFlight[key];
+                            $('.cart-qty[data-product-id="' + productId + '"]').prop('disabled', false);
+                        });
+                    });
+
+                    // Remove item
+                    $(document).on('click', '.cart-remove', function(e) {
+                        e.preventDefault();
+                        const productId = parseInt($(this).data('product-id'), 10);
+
+                        const key = 'p' + productId + ':rm';
+                        if (window.cartHelpers.inFlight[key]) {
+                            return;
+                        }
+                        window.cartHelpers.inFlight[key] = true;
+                        $('.cart-qty[data-product-id="' + productId + '"]').prop('disabled', true);
+                        $('.cart-remove[data-product-id="' + productId + '"]').prop('disabled', true);
+
+                        window.cartHelpers.post(window.cartConfig.routes.remove, {
+                            product_id: productId
+                        }).done(function(response) {
+                            if (response.ok && response.data) {
+                                window.cartHelpers.updateUI(response.data);
+                            }
+                        }).fail(function(xhr) {
+                            const msg = window.handleAjaxError(xhr, 'Erro ao remover item');
+                            showToast(msg, 'error');
+                        }).always(function() {
+                            delete window.cartHelpers.inFlight[key];
+                            $('.cart-qty[data-product-id="' + productId + '"]').prop('disabled', false);
+                            $('.cart-remove[data-product-id="' + productId + '"]').prop('disabled', false);
+                        });
+                    });
+
+                    // Checkout
+                    $(document).on('click', '.cart-checkout', function(e) {
+                        e.preventDefault();
+
+                        window.cartHelpers.post(window.cartConfig.routes.checkout, {})
+                            .done(function(response) {
+                                if (response.ok) {
+                                    window.location.href = '/meus-pedidos';
+                                } else {
+                                    alert(response.error?.message || 'Erro ao processar pedido');
+                                }
+                            });
+                    });
+                });
+            };
+        </script>
     </body>
 </html>

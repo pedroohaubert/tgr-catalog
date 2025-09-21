@@ -16,8 +16,8 @@ class ProductService
             $builder->where('name', 'like', '%'.$query.'%');
         }
 
-        if ($onlyActive !== null) {
-            $builder->where('is_active', $onlyActive);
+        if ($onlyActive === true) {
+            $builder->where('is_active', true);
         }
 
         return $builder->orderBy('name')->paginate($perPage);
@@ -76,7 +76,7 @@ class ProductService
 
     public function toggleActive(Product $product, ?bool $force = null): Product
     {
-        $product->is_active = $force ?? !$product->is_active;
+        $product->is_active = $force ?? ! $product->is_active;
         $product->save();
 
         return $product->refresh();
