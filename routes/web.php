@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -40,7 +41,7 @@ Route::middleware(['auth'])->group(function () {
 
 // User orders (JSON, require auth)
 Route::middleware(['auth'])->group(function () {
-    Route::get('/meus-pedidos', [\App\Http\Controllers\OrderController::class, 'index'])->name('orders.index');
+    Route::get('/meus-pedidos', [OrderController::class, 'index'])->name('orders.index');
 });
 
 // Admin (JSON, require auth + policy)

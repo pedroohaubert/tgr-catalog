@@ -57,7 +57,7 @@ class ApiController extends Controller
         }
 
         if ($e instanceof RuntimeException) {
-            return $this->jsonError('conflict', $e->getMessage(), null, 409);
+            return $this->jsonError('server_error', $e->getMessage(), null, 500);
         }
 
         if ($e instanceof InvalidArgumentException) {

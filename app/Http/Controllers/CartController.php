@@ -6,11 +6,12 @@ use App\DTOs\CartItemAddData;
 use App\DTOs\CartItemRemoveData;
 use App\DTOs\CartItemUpdateData;
 use App\Http\Requests\Cart\CartAddRequest;
-use App\Http\Requests\Cart\CartClearRequest;
 use App\Http\Requests\Cart\CartRemoveRequest;
 use App\Http\Requests\Cart\CartUpdateRequest;
 use App\Services\CartService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class CartController extends ApiController
@@ -49,15 +50,30 @@ class CartController extends ApiController
     public function remove(CartRemoveRequest $request, CartService $cart): JsonResponse
     {
         $dto = CartItemRemoveData::fromRequest($request);
-        $summary = $cart->remove($dto->productId);
 
-        return $this->jsonSuccess($summary, 'Item removido.');
+        try {
+            $summary = $cart->remove($dto->productId);
+
+            return $this->jsonSuccess($summary, 'Item removido.');
+        } catch (Throwable $e) {
+            return $this->handleDomainException($e);
+        }
     }
 
-    public function clear(CartClearRequest $request, CartService $cart): JsonResponse
+    public function clear(Request $request, CartService $cart): JsonResponse
     {
-        $summary = $cart->clear();
+        try {
+            $summary = $cart->clear();
 
-        return $this->jsonSuccess($summary, 'Carrinho limpo.');
+            return $this->jsonSuccess($summary, 'Carrinho limpo.');
+        } catch (Throwable $e) {
+            Log::error('Failed to clear cart', [
+                'user_id' => $request->user()?->id,
+                'exception' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return $this->jsonError('clear_failed', 'Não foi possível limpar o carrinho. Tente novamente.', null, 500);
+        }
     }
 }
