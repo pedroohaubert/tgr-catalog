@@ -10,14 +10,18 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class OrderPaidMail extends Mailable
+class OrderPaidMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(public Order $order) {}
+    public function __construct(public Order $order)
+    {
+        // Ensure this queued mailable will only dispatch after DB commits
+        $this->afterCommit();
+    }
 
     /**
      * Get the message envelope.

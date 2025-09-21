@@ -4,10 +4,18 @@ namespace App\Listeners;
 
 use App\Events\OrderPaid;
 use App\Mail\OrderPaidMail;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Mail;
 
-class SendOrderConfirmation
+class SendOrderConfirmation implements ShouldQueue
 {
+    /**
+     * The number of seconds the listener can run before timing out.
+     *
+     * @var int
+     */
+    public $timeout = 120;
+
     /**
      * Create the event listener.
      */
@@ -28,12 +36,6 @@ class SendOrderConfirmation
             return;
         }
 
-        $mailable = new OrderPaidMail($order);
-
-        if (app()->environment('production')) {
-            Mail::to($recipient)->queue($mailable);
-        } else {
-            Mail::to($recipient)->send($mailable);
-        }
+        Mail::to($recipient)->send(new OrderPaidMail($order));
     }
 }

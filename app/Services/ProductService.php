@@ -4,23 +4,40 @@ namespace App\Services;
 
 use App\Models\Product;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
 class ProductService
 {
     public function paginate(?string $query = null, ?bool $onlyActive = null, int $perPage = 15): LengthAwarePaginator
     {
-        $builder = Product::query();
+        $currentPage = Paginator::resolveCurrentPage();
 
-        if ($query !== null && $query !== '') {
-            $builder->where('name', 'like', '%'.$query.'%');
-        }
+        $cacheKey = 'products:paginate:'.md5(json_encode([
+            'q' => $query,
+            'onlyActive' => $onlyActive,
+            'perPage' => $perPage,
+            'page' => $currentPage,
+            'path' => request()->path(),
+        ]));
 
-        if ($onlyActive === true) {
-            $builder->where('is_active', true);
-        }
+        $paginator = Cache::remember($cacheKey, 60, function () use ($query, $onlyActive, $perPage): LengthAwarePaginator {
+            $builder = Product::query();
 
-        return $builder->orderBy('name')->paginate($perPage);
+            if ($query !== null && $query !== '') {
+                $builder->where('name', 'like', '%'.$query.'%');
+            }
+
+            if ($onlyActive === true) {
+                $builder->where('is_active', true);
+            }
+
+            return $builder->orderBy('name')->paginate($perPage);
+        });
+
+        // Ensure paginator links point to the current URL context (Livewire or JSON route)
+        return $paginator->withPath(url()->current());
     }
 
     public function findBySlug(string $slug): ?Product
