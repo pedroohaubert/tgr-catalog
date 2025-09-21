@@ -18,7 +18,7 @@ class ProductStoreRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'slug' => ['sometimes', 'string', 'max:255', 'nullable', 'unique:products,slug'],
+            'slug' => ['string', 'max:255', 'nullable', 'unique:products,slug'],
             'price' => ['required', 'numeric', 'min:0'],
             'stock' => ['sometimes', 'integer', 'min:0'],
             'is_active' => ['sometimes', 'boolean'],
