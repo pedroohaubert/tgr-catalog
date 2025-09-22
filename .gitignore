@@ -2,7 +2,9 @@
 .DS_Store
 .env
 .env.backup
+.env.bak
 .env.production
+.cursor/
 .phpactor.json
 .phpunit.result.cache
 /.fleet
