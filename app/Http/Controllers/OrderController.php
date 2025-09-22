@@ -2,9 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\DTOs\OrderCancelData;
+use App\Http\Requests\Order\OrderCancelRequest;
 use App\Models\Order;
+use App\Services\OrderService;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Throwable;
 
 class OrderController extends ApiController
 {
@@ -17,6 +22,18 @@ class OrderController extends ApiController
             ->paginate(15);
 
         return view('orders.index', ['paginator' => $paginator]);
+    }
+
+    public function cancel(OrderCancelRequest $request, Order $order, OrderService $orders): JsonResponse
+    {
+        try {
+            $dto = OrderCancelData::fromRequest($request);
+            $updated = $orders->cancel($order);
+
+            return $this->jsonSuccess(['order' => $this->transformOrder($updated)], 'Pedido cancelado com sucesso.');
+        } catch (Throwable $e) {
+            return $this->handleDomainException($e);
+        }
     }
 
     private function paginateOrders(LengthAwarePaginator $paginator): array

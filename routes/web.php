@@ -38,6 +38,7 @@ Route::middleware(['auth'])->group(function () {
 // User orders (JSON, require auth)
 Route::middleware(['auth'])->group(function () {
     Route::get('/meus-pedidos', [OrderController::class, 'index'])->name('orders.index');
+    Route::post('/meus-pedidos/{order}/cancelar', [OrderController::class, 'cancel'])->name('orders.cancel');
 });
 
 // Admin (JSON, require auth + policy)

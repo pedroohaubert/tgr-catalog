@@ -2,8 +2,9 @@
 
 namespace App\Http\Requests\Product;
 
-use Illuminate\Foundation\Http\FormRequest;
 use App\Models\Product;
+use Illuminate\Foundation\Http\FormRequest;
+
 class ProductStoreRequest extends FormRequest
 {
     public function authorize(): bool
@@ -11,9 +12,6 @@ class ProductStoreRequest extends FormRequest
         return $this->user()?->can('create', Product::class) === true;
     }
 
-    /**
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [

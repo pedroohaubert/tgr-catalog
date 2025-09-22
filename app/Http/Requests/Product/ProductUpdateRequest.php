@@ -2,14 +2,15 @@
 
 namespace App\Http\Requests\Product;
 
+use App\Models\Product;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use App\Models\Product;
+
 class ProductUpdateRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        /** @var Product|null $product */
+
         $product = $this->route('product');
         if (! $product instanceof Product) {
             return false;
@@ -18,12 +19,9 @@ class ProductUpdateRequest extends FormRequest
         return $this->user()?->can('update', $product) === true;
     }
 
-    /**
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
-        /** @var Product|null $product */
+
         $product = $this->route('product');
         $ignoreId = $product instanceof Product ? $product->id : null;
 

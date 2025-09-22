@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Cart;
 
 use Illuminate\Foundation\Http\FormRequest;
+
 class CartAddRequest extends FormRequest
 {
     public function authorize(): bool
@@ -10,11 +11,6 @@ class CartAddRequest extends FormRequest
         return $this->user() !== null; // requer autenticado para manipular carrinho
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [

@@ -9,7 +9,7 @@ class ProductShowRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        /** @var Product|null $product */
+
         $product = $this->route('product');
         if (! $product instanceof Product) {
             return false;

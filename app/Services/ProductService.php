@@ -36,7 +36,6 @@ class ProductService
             return $builder->orderBy('name')->paginate($perPage);
         });
 
-        // Ensure paginator links point to the current URL context (Livewire or JSON route)
         return $paginator->withPath(url()->current());
     }
 

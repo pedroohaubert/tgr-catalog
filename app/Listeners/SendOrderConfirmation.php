@@ -9,24 +9,10 @@ use Illuminate\Support\Facades\Mail;
 
 class SendOrderConfirmation implements ShouldQueue
 {
-    /**
-     * The number of seconds the listener can run before timing out.
-     *
-     * @var int
-     */
     public $timeout = 120;
 
-    /**
-     * Create the event listener.
-     */
-    public function __construct()
-    {
-        //
-    }
+    public function __construct() {}
 
-    /**
-     * Handle the event.
-     */
     public function handle(OrderPaid $event): void
     {
         $order = $event->order->loadMissing(['user', 'items']);

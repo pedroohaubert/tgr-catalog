@@ -108,16 +108,7 @@
                             <div>Última atualização: {{ $product->updated_at->format('d/m/Y H:i') }}</div>
                         </div>
 
-                        <div class="flex items-center justify-between">
-                            <button 
-                                type="button" 
-                                id="deleteBtn"
-                                data-product-id="{{ $product->id }}"
-                                data-product-name="{{ $product->name }}"
-                                class="text-red-600 hover:text-red-900 text-sm">
-                                Excluir produto
-                            </button>
-
+                        <div class="flex items-center justify-end">
                             <div class="flex items-center space-x-3">
                                 <a href="{{ route('admin.products.index') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
                                     Cancelar
@@ -133,32 +124,6 @@
         </div>
     </div>
 
-    <!-- Modal de Confirmação de Exclusão -->
-    <div id="deleteModal" class="fixed inset-0 z-50 hidden">
-        <div class="fixed inset-0 bg-gray-500 opacity-75"></div>
-        <div class="flex items-center justify-center min-h-screen px-4">
-            <div class="relative bg-white rounded-lg max-w-md w-full p-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Confirmar Exclusão</h3>
-                <p class="text-sm text-gray-600 mb-4">
-                    Tem certeza que deseja excluir o produto "<span id="deleteProductName"></span>"? Esta ação não pode ser desfeita.
-                </p>
-                <div class="flex justify-end space-x-3">
-                    <button 
-                        type="button" 
-                        onclick="closeDeleteModal()" 
-                        class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-                        Cancelar
-                    </button>
-                    <button 
-                        type="button"
-                        id="confirmDelete"
-                        class="inline-flex items-center px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-red-600 hover:bg-red-700">
-                        Excluir
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <script>
         $(document).ready(function() {
@@ -174,58 +139,6 @@
                 return true; // Allow normal form submission
             });
 
-            // Delete product
-            $('#deleteBtn').on('click', function() {
-                const productName = $(this).data('product-name');
-                $('#deleteProductName').text(productName);
-                $('#deleteModal').removeClass('hidden');
-            });
-
-            $('#confirmDelete').on('click', function() {
-                const productId = $('#deleteBtn').data('product-id');
-                const $btn = $(this);
-                const $modal = $('#deleteModal');
-                const $allButtons = $modal.find('button');
-
-                // Disable all buttons in the modal
-                $allButtons.prop('disabled', true);
-
-                $.ajax({
-                    url: `/admin/products/${productId}`,
-                    type: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
-                        'Accept': 'application/json'
-                    }
-                }).done(function(response) {
-                    if (response.ok) {
-                        showToast(response.message || 'Produto excluído com sucesso');
-                        setTimeout(() => {
-                            window.location.href = '{{ route('admin.products.index') }}';
-                        }, 1500);
-                    } else {
-                        showToast(response.error?.message || 'Erro ao excluir produto', 'error');
-                        closeDeleteModal();
-                    }
-                }).fail(function(xhr) {
-                    const msg = xhr.responseJSON?.error?.message || 'Erro ao excluir produto';
-                    showToast(msg, 'error');
-                    closeDeleteModal();
-                }).always(function() {
-                    $allButtons.prop('disabled', false);
-                });
-            });
-        });
-
-        function closeDeleteModal() {
-            $('#deleteModal').addClass('hidden');
-        }
-
-        // Close modal on ESC key
-        $(document).keyup(function(e) {
-            if (e.key === "Escape") {
-                closeDeleteModal();
-            }
         });
     </script>
 </x-app-layout>

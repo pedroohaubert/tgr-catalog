@@ -43,9 +43,6 @@ class ApiController extends Controller
         return response()->json($payload, $status);
     }
 
-    /**
-     * Map domain exceptions to consistent JSON responses.
-     */
     protected function handleDomainException(Throwable $e): JsonResponse
     {
         if ($e instanceof ConflictHttpException) {
@@ -56,19 +53,15 @@ class ApiController extends Controller
             return $this->jsonError('invalid_state', $e->getMessage(), null, 409);
         }
 
-        // RuntimeException can be either validation/business logic or actual server errors
-        // Check the message to determine the appropriate response
         if ($e instanceof RuntimeException) {
             $message = $e->getMessage();
 
-            // Business logic validations should return 409 (Conflict) instead of 500
             if (str_contains($message, 'estoque') ||
                 str_contains($message, 'Quantidade') ||
                 str_contains($message, 'inativo')) {
                 return $this->jsonError('validation_error', $message, null, 409);
             }
 
-            // Actual server errors return 500
             return $this->jsonError('server_error', $message, null, 500);
         }
 

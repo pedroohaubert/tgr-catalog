@@ -7,7 +7,6 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
@@ -16,12 +15,6 @@ use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 
 class OrderService
 {
-    /**
-     * Cria um pedido a partir do carrinho atual do usuário.
-     * - Transação atômica.
-     * - Usa snapshot de preços do carrinho.
-     * - Deixa o débito de estoque para a confirmação de pagamento.
-     */
     public function createFromCart(User $user, CartService $cart): Order
     {
         $items = $cart->items();
@@ -66,13 +59,6 @@ class OrderService
         return $order;
     }
 
-    /**
-     * Confirma o pagamento de um pedido (idempotente).
-     * - Recalcula total a partir dos itens do pedido.
-     * - Bloqueia linhas de produtos (FOR UPDATE) e debita estoque.
-     * - Nunca permite estoque negativo. Em conflito: lança 409.
-     * - Event `OrderPaid` disparado após commit.
-     */
     public function confirmPayment(Order $order): Order
     {
         if ($order->status === 'paid') {
@@ -95,7 +81,6 @@ class OrderService
 
             $productIds = $order->items->pluck('product_id')->all();
 
-            /** @var Collection<int, Product> $products */
             $products = Product::query()
                 ->whereIn('id', $productIds)
                 ->lockForUpdate()
@@ -103,7 +88,7 @@ class OrderService
                 ->keyBy('id');
 
             foreach ($order->items as $item) {
-                /** @var Product $product */
+
                 $product = $products->get($item->product_id);
                 if ($product === null) {
                     throw new ConflictHttpException('Produto não encontrado para item do pedido.');
@@ -138,11 +123,6 @@ class OrderService
         return $updated;
     }
 
-    /**
-     * Cancela um pedido (idempotente).
-     * - Só permite cancelar pedidos pendentes.
-     * - Pedidos pagos não podem ser cancelados.
-     */
     public function cancel(Order $order): Order
     {
         if ($order->status === 'canceled') {

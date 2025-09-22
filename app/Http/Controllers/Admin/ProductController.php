@@ -34,8 +34,6 @@ class ProductController extends ApiController
             perPage: $perPage,
         );
 
-        // Return view for browser requests, JSON for AJAX
-        /** @var \Illuminate\Http\Request $request */
         if ($request->expectsJson()) {
             return $this->jsonSuccess($this->paginateResponse($paginator));
         }
@@ -45,7 +43,7 @@ class ProductController extends ApiController
 
     public function show(ProductShowRequest $request, Product $product)
     {
-        // Redirect to edit page for admin
+
         return redirect()->route('admin.products.edit', $product);
     }
 
@@ -68,7 +66,6 @@ class ProductController extends ApiController
         $dto = ProductStoreData::fromRequest($request);
         $created = $products->create($dto->toArray());
 
-        /** @var \Illuminate\Http\Request $request */
         if ($request->expectsJson() === false) {
             return redirect()->route('admin.products.index')->with('status', 'Produto criado.');
         }
@@ -81,7 +78,6 @@ class ProductController extends ApiController
         $dto = ProductUpdateData::fromRequest($request);
         $updated = $products->update($product, $dto->toArray());
 
-        /** @var \Illuminate\Http\Request $request */
         if ($request->expectsJson()) {
             return $this->jsonSuccess(['product' => $this->transformProduct($updated)], 'Produto atualizado.');
         }

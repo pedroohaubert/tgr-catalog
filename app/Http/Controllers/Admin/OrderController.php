@@ -21,7 +21,6 @@ class OrderController extends ApiController
             ->latest('id')
             ->paginate(20);
 
-        /** @var \Illuminate\Http\Request $request */
         if ($request->expectsJson()) {
             return $this->jsonSuccess($this->paginateOrders($paginator));
         }
@@ -34,8 +33,6 @@ class OrderController extends ApiController
         try {
             $updated = $orders->confirmPayment($order);
 
-            // FUTURE: After confirming payment, redirect back to order detail page with success flash.
-            // Example: return redirect()->route('admin.orders.show', $updated)->with('status', 'paid');
             return $this->jsonSuccess(['order' => $this->transformOrder($updated)], 'Pagamento confirmado.');
         } catch (Throwable $e) {
             return $this->handleDomainException($e);
