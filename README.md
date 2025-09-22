@@ -14,6 +14,88 @@ Este projeto implementa um sistema de e-commerce simplificado com as seguintes f
 - **Operações assíncronas via AJAX** (baseadas em sessão/CSRF, não APIs REST)
 - **Testes automatizados** cobrindo funcionalidades críticas
 
+## 🚀 Como executar
+
+### Primeira execução
+
+Para iniciar o projeto pela primeira vez, simplesmente execute:
+
+```bash
+git clone <url-do-repositorio>
+cd tgr-catalog
+make up
+```
+
+**É isso!** O Docker irá automaticamente:
+
+- Construir as imagens Docker
+- Instalar dependências do Composer e Node.js
+- Criar/configurar o arquivo `.env` a partir do `.env.example`
+- Configurar a chave da aplicação
+- Executar migrations do banco de dados
+- Executar seeders com dados iniciais
+- Iniciar servidor Laravel (porta 8000) e Vite (porta 5173)
+
+A primeira execução pode levar alguns minutos devido à instalação das dependências.
+
+### URLs de acesso
+
+- **Aplicação Laravel**: http://localhost:8000
+- **Vite (desenvolvimento)**: http://localhost:5173
+
+### Usuários de teste
+
+Após a inicialização, estarão disponíveis os seguintes usuários:
+
+- **Administrador:**
+  - Email: `admin@example.com`
+  - Senha: `password`
+- **Cliente:**
+  - Email: `cliente@example.com`
+  - Senha: `password`
+
+### Como navegar na aplicação
+
+Após fazer login, você verá seu nome no **canto superior direito**. Clique nele para abrir um **menu dropdown** com as opções de navegação:
+
+#### Para Clientes:
+
+- **Meus Pedidos:** Visualizar histórico de pedidos e status
+- **Perfil:** Editar informações pessoais
+- **Logout:** Sair da conta
+
+#### Para Administradores:
+
+- **Gerenciar Produtos:** CRUD completo de produtos (criar, editar, ativar/desativar)
+- **Gerenciar Pedidos:** Visualizar todos os pedidos, confirmar pagamentos, cancelar pedidos
+- **Meus Pedidos:** Visualizar histórico de pedidos e status
+- **Perfil:** Editar informações pessoais
+- **Logout:** Sair da conta
+
+O menu administrativo só aparece para usuários com perfil de administrador.
+
+### Comandos úteis
+
+```bash
+# Parar containers
+make down
+
+# Reset apenas do banco de dados
+make reset-db
+
+# Reset completo (remove vendor, node_modules, banco e rebuild tudo)
+make fresh-install
+
+# Executar testes
+make test
+
+# Acessar shell do container
+make shell
+
+# Executar comandos Artisan via Docker
+make artisan CMD="route:list"
+```
+
 ## 🏗️ Tecnologias Utilizadas
 
 - **Laravel 12** - Framework PHP
@@ -27,36 +109,9 @@ Este projeto implementa um sistema de e-commerce simplificado com as seguintes f
 - **Docker** - Containerização
 - **PHPUnit** - Testes
 
-## 🚀 Instalação e Configuração
+## ⚙️ Configuração Manual (Alternativa)
 
-### Pré-requisitos
-
-- Docker e Docker Compose
-- Git
-
-### Instalação Rápida com Docker
-
-1. **Clone o repositório:**
-
-   ```bash
-   git clone <url-do-repositorio>
-   cd tgr-catalog
-   ```
-2. **Execute o setup completo:**
-
-   ```bash
-   make up
-   ```
-
-   Este comando irá:
-
-   - Construir as imagens Docker
-   - Instalar dependências do Composer
-   - Configurar o arquivo `.env`
-   - Executar migrations e seeders
-   - Iniciar o servidor Laravel (porta 8000) e Vite (porta 5173)
-
-### Configuração Manual (sem Docker)
+Caso prefira executar sem Docker:
 
 1. **Clone e instale dependências:**
 
@@ -99,25 +154,6 @@ Este projeto implementa um sistema de e-commerce simplificado com as seguintes f
    # Terminal 2 - Vite (desenvolvimento)
    npm run dev
    ```
-
-## 🌐 URLs de Acesso
-
-- **Aplicação Principal:** http://localhost:8000
-- **Vite (desenvolvimento):** http://localhost:5173
-- **Mailtrap (e-mails):** https://mailtrap.io
-
-## 👥 Usuários de Teste
-
-Após executar os seeders, estarão disponíveis:
-
-- **Administrador:**
-
-  - Email: `admin@example.com`
-  - Senha: `password`
-- **Cliente:**
-
-  - Email: `cliente@example.com`
-  - Senha: `password`
 
 ## 📊 Fluxos da Aplicação
 
@@ -316,29 +352,37 @@ Para testar o envio de e-mails de confirmação:
 - **Confirmação de pedido:** Quando pagamento é confirmado
 - **Jobs em fila:** Processamento assíncrono para melhor performance
 
-## 🐳 Docker Commands
+## 🐳 Comandos Docker
+
+### Básicos
 
 ```bash
-# Iniciar ambiente
-make up
+make up          # Iniciar ambiente (construção automática na primeira vez)
+make down        # Parar containers
+make shell       # Acessar shell do container app
+```
 
-# Parar ambiente
-make down
+### Banco de dados
 
-# Acessar container
-make shell
+```bash
+make migrate     # Executar migrations
+make seed        # Executar seeders
+make fresh       # Reset DB + seed (dentro do container)
+make reset-db    # Reset apenas DB (para containers)
+```
 
-# Executar migrations
-make migrate
+### Desenvolvimento
 
-# Executar seeders
-make seed
+```bash
+make test        # Executar testes
+make tinker      # Abrir Tinker
+make artisan CMD="route:list"  # Executar comandos Artisan
+```
 
-# Reset completo
-make reset-db
+### Reset completo
 
-# Executar testes
-make test
+```bash
+make fresh-install  # Reset total: remove vendor, node_modules, DB e rebuild
 ```
 
 ### Debug
