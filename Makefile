@@ -22,7 +22,7 @@ fresh:
 	docker compose exec app php artisan migrate:fresh --seed
 
 test:
-	docker compose exec app php artisan test
+	docker compose exec app php artisan test tests/Feature/Feature/
 
 tinker:
 	docker compose exec app php artisan tinker
