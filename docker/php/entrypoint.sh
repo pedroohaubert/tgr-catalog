@@ -25,6 +25,13 @@ fi
 if [ -n "$DB_CONNECTION" ]; then
   if grep -q '^DB_CONNECTION=' .env; then sed -i 's/^DB_CONNECTION=.*/DB_CONNECTION='"$DB_CONNECTION"'/' .env; else printf 'DB_CONNECTION=%s\n' "$DB_CONNECTION" >> .env; fi
 fi
+
+# If we're in Docker (detected by the presence of /var/www/html path), replace relative database path
+if [ -d "/var/www/html" ] && grep -q '^DB_DATABASE=database/database.sqlite' .env; then
+  sed -i 's#^DB_DATABASE=database/database.sqlite#DB_DATABASE=/var/www/html/database/database.sqlite#' .env
+fi
+
+# Override DB_DATABASE if explicitly set in environment
 if [ -n "$DB_DATABASE" ]; then
   if grep -q '^DB_DATABASE=' .env; then sed -i 's#^DB_DATABASE=.*#DB_DATABASE='"$DB_DATABASE"'#' .env; else printf 'DB_DATABASE=%s\n' "$DB_DATABASE" >> .env; fi
 fi
