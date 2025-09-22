@@ -1,6 +1,5 @@
 FROM php:8.4-cli-alpine
 
-# Install system dependencies and PHP extensions
 RUN apk add --no-cache \
     git \
     unzip \
@@ -23,16 +22,13 @@ RUN docker-php-ext-configure gd --with-jpeg \
         zip \
         intl
 
-# Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
-# Copy entrypoint
 COPY docker/php/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-# Configure PHP-FPM
 ENV PHP_OPCACHE_VALIDATE_TIMESTAMPS=1 \
     PHP_MEMORY_LIMIT=512M \
     PHP_MAX_EXECUTION_TIME=120

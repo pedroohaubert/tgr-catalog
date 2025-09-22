@@ -24,7 +24,7 @@
             </div>
         @endif
 
-        <!-- Campo de Busca -->
+        
         <div class="mb-6">
             <div class="relative">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">

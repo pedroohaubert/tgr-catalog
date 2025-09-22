@@ -30,13 +30,11 @@ class ProductsListTest extends TestCase
         Product::factory()->create(['name' => 'Produto Ativo', 'is_active' => true]);
         Product::factory()->create(['name' => 'Produto Inativo', 'is_active' => false]);
 
-        // Show only active products
         Livewire::test(ProductsList::class)
             ->set('showInactive', false)
             ->assertSee('Produto Ativo')
             ->assertDontSee('Produto Inativo');
 
-        // Show all products
         Livewire::test(ProductsList::class)
             ->set('showInactive', true)
             ->assertSee('Produto Ativo')
@@ -49,7 +47,6 @@ class ProductsListTest extends TestCase
         Product::factory()->create(['name' => 'Café Inativo', 'is_active' => false]);
         Product::factory()->create(['name' => 'Chá Ativo', 'is_active' => true]);
 
-        // Search for "Café" and show only active
         Livewire::test(ProductsList::class)
             ->set('query', 'Café')
             ->set('showInactive', false)

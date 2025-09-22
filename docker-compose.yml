@@ -8,7 +8,6 @@ services:
     environment:
       APP_ENV: local
       APP_DEBUG: "true"
-      # Ensure SQLite file persists on volume
       DB_CONNECTION: sqlite
     ports:
       - "8000:8000"

@@ -73,7 +73,7 @@
         </div>
     </div>
 
-    <!-- Modal de Confirmação de Cancelamento -->
+    
     <div id="cancelModalClient" class="fixed inset-0 z-50 hidden">
         <div class="fixed inset-0 bg-gray-900/60"></div>
         <div class="flex items-center justify-center min-h-screen px-4">

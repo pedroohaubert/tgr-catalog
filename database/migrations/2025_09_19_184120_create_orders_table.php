@@ -1,6 +1,6 @@
 <?php
 
-// database/migrations/xxxx_xx_xx_xxxxxx_create_orders_table.php
+
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -15,7 +15,7 @@ return new class extends Migration
             $table->uuid('code')->unique();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->decimal('total', 10, 2)->default(0);
-            $table->string('status')->default('pending')->index(); // pending|paid|canceled
+            $table->string('status')->default('pending')->index(); 
             $table->timestamps();
 
             $table->index('user_id');

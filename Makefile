@@ -1,4 +1,3 @@
-# Docker commands
 up:
 	docker compose up --build
 
@@ -8,7 +7,6 @@ down:
 shell:
 	docker compose exec app sh
 
-# Laravel Artisan commands
 artisan:
 	docker compose exec app php artisan $(CMD)
 
@@ -27,7 +25,6 @@ test:
 tinker:
 	docker compose exec app php artisan tinker
 
-# Development shortcuts
 reset-db: down
 	rm -f storage/app/.bootstrapped database/database.sqlite
 	$(MAKE) up

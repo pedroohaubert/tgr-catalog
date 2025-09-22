@@ -9,7 +9,6 @@ class OrderPayRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        // Skip authorization in tests
         if (app()->environment('testing')) {
             return true;
         }

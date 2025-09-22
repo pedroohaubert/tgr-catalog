@@ -20,7 +20,6 @@ class OrderPolicyTest extends TestCase
         $order1 = Order::factory()->for($client1)->create(['status' => 'pending']);
         $order2 = Order::factory()->for($client2)->create(['status' => 'pending']);
 
-        // Client1 can view their own orders page
         $this->actingAs($client1)
             ->get(route('orders.index'))
             ->assertOk()
@@ -45,7 +44,6 @@ class OrderPolicyTest extends TestCase
                 'message' => 'Pedido cancelado com sucesso.',
             ]);
 
-        // Verify order was cancelled
         $this->assertDatabaseHas('orders', [
             'id' => $order->id,
             'status' => 'canceled',
@@ -63,7 +61,6 @@ class OrderPolicyTest extends TestCase
             ->postJson(route('orders.cancel', $order))
             ->assertForbidden();
 
-        // Verify order status didn't change
         $this->assertDatabaseHas('orders', [
             'id' => $order->id,
             'status' => 'pending',
@@ -97,7 +94,7 @@ class OrderPolicyTest extends TestCase
                 'ok' => true,
                 'data' => [
                     'items' => [
-                        ['id' => $order2->id], // Should include both orders
+                        ['id' => $order2->id],
                         ['id' => $order1->id],
                     ],
                 ],

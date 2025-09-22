@@ -19,7 +19,6 @@ class OrderCheckoutTest extends TestCase
         $product1 = Product::factory()->create(['price' => 10.00, 'stock' => 5, 'is_active' => true]);
         $product2 = Product::factory()->create(['price' => 20.00, 'stock' => 3, 'is_active' => true]);
 
-        // Add items to cart using session
         session()->put('cart.items', [
             $product1->id => [
                 'product_id' => $product1->id,
@@ -39,11 +38,6 @@ class OrderCheckoutTest extends TestCase
             ->withoutMiddleware()
             ->post('/checkout', [], ['Accept' => 'application/json']);
 
-        // Debug: let's see what we're getting
-        if ($response->getStatusCode() !== 201) {
-            dump($response->getContent());
-        }
-
         $response->assertStatus(201)
             ->assertJson([
                 'ok' => true,
@@ -55,14 +49,12 @@ class OrderCheckoutTest extends TestCase
                 ],
             ]);
 
-        // Verify order was created in database
         $this->assertDatabaseHas('orders', [
             'user_id' => $user->id,
             'total' => 40.00,
             'status' => 'pending',
         ]);
 
-        // Verify order items were created
         $this->assertDatabaseHas('order_items', [
             'product_id' => $product1->id,
             'quantity' => 2,

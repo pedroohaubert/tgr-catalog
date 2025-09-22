@@ -1,9 +1,9 @@
 <nav x-data="{ open: false, query: new URLSearchParams(window.location.search).get('q') || '', onlyActive: (new URLSearchParams(window.location.search).get('only_active') ?? '1') === '1' }" class="bg-white border-b border-gray-100">
-    <!-- Primary Navigation Menu -->
+    
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
             <div class="flex w-full">
-                <!-- Logo / Brand -->
+                
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('products.index') }}" class="flex items-center">
                         <svg width="40" height="29" viewBox="0 0 76 55" fill="none" xmlns="http://www.w3.org/2000/svg" class="text-gray-900">
@@ -16,16 +16,16 @@
                     </a>
                 </div>
 
-                <!-- Search -->
+                
                 <div class="hidden sm:flex sm:items-center sm:ms-8 sm:flex-1 sm:justify-center">
                     <livewire:header-search />
                 </div>
             </div>
 
-            <!-- Right side: Cart + Settings -->
+            
             <div class="hidden sm:flex sm:items-center sm:ms-6">
                 @auth
-                <!-- Cart Dropdown (only for authenticated users) -->
+                
                 <div x-data="{
                     open: false,
                     summary: null,
@@ -111,7 +111,7 @@
                     }
                 }" class="relative me-4" x-init="init()" data-cart-dropdown>
                     <button x-on:click="toggle()" class="relative inline-flex items-center p-2 rounded-md text-gray-600 hover:text-gray-800">
-                        <!-- cart icon -->
+                        
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.25 3h1.386c.51 0 .955.343 1.085.836l.383 1.437M7.5 14.25h8.784a1.5 1.5 0 001.447-1.106l1.812-6.652a.75.75 0 00-.722-.942H5.104M7.5 14.25L5.104 5.25M7.5 14.25l-.597 2.389A1.5 1.5 0 008.361 18.75h7.278m0 0a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm-7.278 0a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
                         </svg>
@@ -165,7 +165,7 @@
                         </template>
                     </div>
 
-                    <!-- Clear Cart Confirmation Modal -->
+                    
                     <div x-show="showClearModal" class="fixed inset-0 px-4 py-6 sm:px-0 z-50 flex items-center justify-center" style="display: none;" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
                         <div class="fixed inset-0 bg-gray-500 opacity-75" x-on:click="cancelClear()"></div>
                         <div class="relative mx-auto max-w-sm bg-white rounded-lg overflow-hidden shadow-xl">
@@ -237,7 +237,7 @@
                                 {{ __('Profile') }}
                             </x-dropdown-link>
 
-                            <!-- Authentication -->
+                            
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
 
@@ -261,7 +261,7 @@
                 </x-dropdown>
             </div>
 
-            <!-- Hamburger -->
+            
             <div class="-me-2 flex items-center sm:hidden">
                 <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
                     <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
@@ -273,7 +273,7 @@
         </div>
     </div>
 
-    <!-- Responsive Navigation Menu -->
+    
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('products.index')" :active="request()->routeIs('products.index')">
@@ -281,7 +281,7 @@
             </x-responsive-nav-link>
         </div>
 
-        <!-- Mobile Cart (only for authenticated users) -->
+        
         @auth
         <div class="px-4 py-2 border-t border-gray-200">
             <div class="flex items-center justify-between">
@@ -294,7 +294,7 @@
         </div>
         @endauth
 
-        <!-- Responsive Settings Options -->
+        
         <div class="pt-4 pb-1 border-t border-gray-200">
             @auth
             <div class="px-4">
@@ -322,7 +322,7 @@
                     {{ __('Profile') }}
                 </x-responsive-nav-link>
 
-                <!-- Authentication -->
+                
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
 

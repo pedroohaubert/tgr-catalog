@@ -1,6 +1,6 @@
 <?php
 
-// database/seeders/DatabaseSeeder.php
+
 
 namespace Database\Seeders;
 

@@ -48,7 +48,7 @@
     </div>
 
     @auth
-    <!-- Handled globally via delegated jQuery in layout -->
+    
     @endauth
 </x-app-layout>
 

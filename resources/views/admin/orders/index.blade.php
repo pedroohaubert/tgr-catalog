@@ -19,7 +19,7 @@
             </div>
         @endif
 
-        <!-- Campo de Busca -->
+        
         <div class="mb-6">
             <div class="relative">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -199,7 +199,7 @@
         </div>
     </div>
 
-    <!-- Modal de Confirmação de Pagamento -->
+    
     <div id="payModal" class="fixed inset-0 z-50 hidden">
         <div class="fixed inset-0 bg-gray-900/60"></div>
         <div class="flex items-center justify-center min-h-screen px-4">
@@ -229,7 +229,7 @@
         </div>
     </div>
 
-    <!-- Modal de Confirmação de Cancelamento -->
+    
     <div id="cancelModal" class="fixed inset-0 z-50 hidden">
         <div class="fixed inset-0 bg-gray-900/60"></div>
         <div class="flex items-center justify-center min-h-screen px-4">

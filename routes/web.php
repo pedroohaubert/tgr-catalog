@@ -11,20 +11,14 @@ use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/produtos');
 
-// Dashboard route removed in favor of public products page
-
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
-
-// Public catalog page
 Route::get('/produtos', [ProductController::class, 'page'])->name('products.index');
 Route::get('/produtos/busca', [ProductController::class, 'index'])->name('products.search');
 Route::get('/produtos/{slug}', [ProductController::class, 'show'])->name('products.show');
-
-// Cart + Checkout (JSON, require auth)
 Route::middleware(['auth'])->group(function () {
     Route::get('/carrinho/summary', [CartController::class, 'summary'])->name('cart.summary');
     Route::post('/carrinho/add', [CartController::class, 'add'])->name('cart.add');
@@ -34,16 +28,11 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 });
-
-// User orders (JSON, require auth)
 Route::middleware(['auth'])->group(function () {
     Route::get('/meus-pedidos', [OrderController::class, 'index'])->name('orders.index');
     Route::post('/meus-pedidos/{order}/cancelar', [OrderController::class, 'cancel'])->name('orders.cancel');
 });
-
-// Admin (JSON, require auth + policy)
 Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
-    // Products
     Route::get('/products', [AdminProductController::class, 'index'])
         ->middleware('can:viewAny,App\\Models\\Product')->name('products.index');
     Route::get('/products/create', [AdminProductController::class, 'create'])
@@ -58,8 +47,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
         ->middleware('can:update,product')->name('products.update');
     Route::post('/products/{product}/toggle-active', [AdminProductController::class, 'toggleActive'])
         ->middleware('can:update,product')->name('products.toggleActive');
-
-    // Orders
     Route::get('/orders', [AdminOrderController::class, 'index'])
         ->middleware('can:viewAny,App\\Models\\Order')->name('orders.index');
     Route::post('/orders/{order}/pay', [AdminOrderController::class, 'pay'])

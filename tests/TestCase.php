@@ -10,7 +10,6 @@ abstract class TestCase extends BaseTestCase
     {
         parent::setUp();
 
-        // Disable CSRF protection for all tests
         $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class);
     }
 }
