@@ -34,12 +34,15 @@ class OrderPolicyTest extends TestCase
         $order = Order::factory()->for($client)->create(['status' => 'pending']);
 
         $this->actingAs($client)
-            ->withoutMiddleware()
-            ->postJson(route('orders.cancel', $order))
+            ->withSession(['_token' => 'test-token'])
+            ->withoutMiddleware(\Illuminate\Auth\Middleware\Authorize::class)
+            ->postJson(route('orders.cancel', $order), [], [
+                'X-CSRF-TOKEN' => 'test-token',
+            ])
             ->assertOk()
             ->assertJson([
                 'ok' => true,
-                'message' => 'Pedido cancelado.',
+                'message' => 'Pedido cancelado com sucesso.',
             ]);
 
         // Verify order was cancelled
@@ -115,8 +118,11 @@ class OrderPolicyTest extends TestCase
         ]);
 
         $this->actingAs($admin)
-            ->withoutMiddleware()
-            ->postJson(route('admin.orders.pay', $order))
+            ->withSession(['_token' => 'test-token'])
+            ->withoutMiddleware(\Illuminate\Auth\Middleware\Authorize::class)
+            ->postJson(route('admin.orders.pay', $order), [], [
+                'X-CSRF-TOKEN' => 'test-token',
+            ])
             ->assertOk()
             ->assertJson([
                 'ok' => true,

@@ -22,6 +22,6 @@ class SendOrderConfirmation implements ShouldQueue
             return;
         }
 
-        Mail::to($recipient)->send(new OrderPaidMail($order));
+        Mail::to($recipient)->queue(new OrderPaidMail($order));
     }
 }
