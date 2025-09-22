@@ -1,18 +1,20 @@
 <div>
-    <div class="flex items-center justify-between mb-4">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
         <div class="text-sm text-gray-600">Resultados</div>
-        <form wire:submit.prevent="applySearch" class="flex items-center gap-3 text-sm">
+        <form wire:submit.prevent="applySearch" class="flex flex-col sm:flex-row items-start sm:items-center gap-3 text-sm">
             <input
                 wire:model.debounce.300ms="query"
                 type="search"
                 placeholder="Buscar..."
-                class="block w-64 rounded-md border-gray-300 shadow-sm focus:border-gray-700 focus:ring-gray-700 text-sm"
+                class="block w-full sm:w-64 rounded-md border-gray-300 shadow-sm focus:border-gray-700 focus:ring-gray-700 text-sm"
             />
-            <label class="inline-flex items-center gap-1.5 text-xs text-gray-500">
-                <input type="checkbox" wire:model="showInactive" class="w-3 h-3 rounded border-gray-300 text-gray-800 focus:ring-gray-700" />
-                Inativos
-            </label>
-            <button type="submit" class="inline-flex items-center px-3 py-2 rounded-md bg-black text-white text-sm hover:bg-gray-800">Buscar</button>
+            <div class="flex items-center gap-3">
+                <label class="inline-flex items-center gap-1.5 text-xs text-gray-500">
+                    <input type="checkbox" wire:model="showInactive" class="w-3 h-3 rounded border-gray-300 text-gray-800 focus:ring-gray-700" />
+                    Inativos
+                </label>
+                <button type="submit" class="inline-flex items-center px-3 py-2 rounded-md bg-black text-white text-sm hover:bg-gray-800">Buscar</button>
+            </div>
         </form>
     </div>
 

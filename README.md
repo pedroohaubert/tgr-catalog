@@ -167,7 +167,7 @@ Após executar os seeders, estarão disponíveis:
 
 1. **Gestão de Produtos:**
    - CRUD completo
-   - Toggle ativo/inativo
+   - Toggle ativo/inativo (clique direto no status na listagem)
    - Validação de slugs únicos
 2. **Gestão de Pedidos:**
    - Listar todos os pedidos

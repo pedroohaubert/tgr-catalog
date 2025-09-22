@@ -5,8 +5,14 @@
             <div class="flex w-full">
                 <!-- Logo / Brand -->
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('products.index') }}" class="text-xl font-semibold tracking-tight text-gray-900">
-                        TGR
+                    <a href="{{ route('products.index') }}" class="flex items-center">
+                        <svg width="40" height="29" viewBox="0 0 76 55" fill="none" xmlns="http://www.w3.org/2000/svg" class="text-gray-900">
+<path d="M14.42 0H5.93323C5.28916 0 4.76545 0.526449 4.76545 1.17754V10.3191H1.16778C0.523712 10.3191 0 10.8455 0 11.4966V16.9989H21.1339V10.3207H14.42V0Z" fill="#EF0334"/>
+<path d="M15.5845 35.4361C15.0087 35.4345 14.6607 35.4 14.4574 35.3656C14.4379 35.2163 14.42 34.9867 14.42 34.6522V16.9973C14.42 16.9973 4.76545 24.8612 4.76545 30.5587V34.5439C4.76545 36.7104 5.02893 39.8248 7.30106 41.865C9.37964 43.7314 12.3528 43.9708 14.7095 43.9708C15.7536 43.9708 17.5167 43.815 18.8113 43.6854C18.8113 43.6854 20.376 43.5477 21.1355 42.9212V36.4513C21.1355 35.7838 20.5858 35.2508 19.9254 35.2754L15.5861 35.4377L15.5845 35.4361Z" fill="#000000"/>
+<path d="M34.9163 42.5341C34.1388 42.462 33.3874 42.3341 32.6637 42.1569C33.3598 42.3357 34.1047 42.4685 34.8968 42.5325C34.9033 42.5325 34.9098 42.5325 34.9163 42.5341Z" fill="#000000"/>
+<path d="M71.0817 19.1998L71.0784 19.1965C71.0784 19.1965 71.1207 19.1965 71.202 19.1965C71.2069 19.1965 71.2118 19.1965 71.2183 19.1965C71.2329 19.1965 71.2459 19.1965 71.2589 19.1965C71.3029 19.1965 71.3565 19.1982 71.4167 19.2015C71.5045 19.2031 71.594 19.2047 71.6802 19.2097C71.7322 19.2129 71.781 19.2179 71.8315 19.2228C71.929 19.231 72.025 19.2375 72.1193 19.249C72.1779 19.2556 72.2348 19.2654 72.2917 19.2753C72.3064 19.2769 72.3194 19.2802 72.334 19.2818C72.9716 19.3638 73.8124 19.5245 74.7655 19.8329C75.3673 20.028 75.9837 19.5803 75.987 18.9423C75.9951 16.4692 76 11.4589 76 11.4589C74.8046 11.2162 73.5343 11.0932 72.1941 11.0932C69.3885 11.0932 66.9359 11.249 64.9191 12.4413V10.3174H56.6438C55.9997 10.3174 55.4777 10.8422 55.476 11.4917C55.4598 17.3056 55.398 42.7834 55.4793 43.6969H65.1338V27.9494H65.1549C65.1484 27.8165 65.1436 27.687 65.1403 27.5607C65.1403 27.5426 65.1403 27.523 65.1403 27.5049C65.1371 27.377 65.1354 27.2524 65.1354 27.131C65.1354 24.1937 65.9145 19.2851 71.0817 19.1982V19.1998Z" fill="#000000"/>
+<path d="M44.9107 10.3191C44.2667 10.3191 43.7429 10.8455 43.7429 11.4966V12.4429C41.7262 11.2506 39.2735 11.0948 36.4679 11.0948C27.6689 11.0948 21.7584 16.3724 21.7584 26.1913C21.7584 31.8789 23.7443 36.4841 27.124 39.3541C27.9665 40.0495 29.9215 41.4566 32.662 42.1586C33.3858 42.3357 34.1372 42.4636 34.9147 42.5358C34.9244 42.5358 34.9325 42.5374 34.9423 42.5391C35.44 42.585 35.9491 42.6325 36.4679 42.6079C42.9557 42.2832 44.5692 40.8548 44.5692 40.8548L44.5724 41.6124C44.5724 41.6124 44.8115 47.815 37.8048 47.9479C33.5143 48.0299 32.1969 45.8749 31.8196 44.412C31.6862 43.8937 31.2227 43.5329 30.6908 43.5329H22.988C22.988 43.5329 22.0479 55 38.0846 55C52.2362 55 53.1811 45.5436 53.1811 44.4038V10.3191H44.9107ZM37.4438 34.1257C32.1969 34.1257 31.4146 29.1532 31.4146 26.1896C31.4146 23.2261 32.1985 18.2535 37.4438 18.2535C42.689 18.2535 43.5283 23.2261 43.5283 26.1896C43.5283 29.1532 42.7378 34.1257 37.4438 34.1257Z" fill="#000000"/>
+                        </svg>
                     </a>
                 </div>
 
@@ -83,12 +89,25 @@
                         window.addEventListener('cart:updated', (e) => {
                             if (e.detail) {
                                 this.summary = { ok: true, data: e.detail };
+                                // Update mobile cart count
+                                const mobileCount = document.getElementById('mobile-cart-count');
+                                if (mobileCount) {
+                                    mobileCount.textContent = e.detail.count || 0;
+                                }
                             }
                         });
                         window.addEventListener('cart:open', () => {
                             this.open = true;
                             this.fetch();
                         });
+
+                        // Initialize mobile cart count
+                        if (this.summary?.data?.count !== undefined) {
+                            const mobileCount = document.getElementById('mobile-cart-count');
+                            if (mobileCount) {
+                                mobileCount.textContent = this.summary.data.count;
+                            }
+                        }
                     }
                 }" class="relative me-4" x-init="init()" data-cart-dropdown>
                     <button x-on:click="toggle()" class="relative inline-flex items-center p-2 rounded-md text-gray-600 hover:text-gray-800">
@@ -261,6 +280,19 @@
                 {{ __('Produtos') }}
             </x-responsive-nav-link>
         </div>
+
+        <!-- Mobile Cart (only for authenticated users) -->
+        @auth
+        <div class="px-4 py-2 border-t border-gray-200">
+            <div class="flex items-center justify-between">
+                <span class="text-sm font-medium text-gray-900">Carrinho</span>
+                <span id="mobile-cart-count" class="text-sm text-gray-500">0</span>
+            </div>
+            <button class="w-full mt-2 inline-flex justify-center items-center px-3 py-2 rounded-md bg-black text-white text-sm hover:bg-gray-800" onclick="window.dispatchEvent(new CustomEvent('cart:open'))">
+                Ver carrinho
+            </button>
+        </div>
+        @endauth
 
         <!-- Responsive Settings Options -->
         <div class="pt-4 pb-1 border-t border-gray-200">
