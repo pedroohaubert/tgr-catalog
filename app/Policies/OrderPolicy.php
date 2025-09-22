@@ -18,7 +18,7 @@ class OrderPolicy
 
     public function viewAny(User $user): bool
     {
-        return false;
+        return $user->isAdmin();
     }
 
     public function view(User $user, Order $order): bool
@@ -43,7 +43,7 @@ class OrderPolicy
 
     public function pay(User $user, Order $order): bool
     {
-        return false;
+        return $user->isAdmin();
     }
 
     public function cancel(User $user, Order $order): bool
