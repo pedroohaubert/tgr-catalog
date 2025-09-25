@@ -131,7 +131,15 @@
 
         
         <script>
+            /**
+             * Inicializa o sistema de carrinho de compras
+             * Configura rotas, estado global e helpers para manipulação do carrinho
+             */
             window.initCart = function() {
+                /**
+                 * Configuração das rotas do backend e token CSRF
+                 * Centraliza todas as URLs necessárias para operações do carrinho
+                 */
                 window.cartConfig = {
                     routes: {
                         summary: '{{ route('cart.summary') }}',
@@ -144,14 +152,29 @@
                     csrfToken: document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 };
 
+                /**
+                 * Estado global do carrinho mantido em memória
+                 * Atualizado sempre que há mudanças no backend
+                 */
                 window.cartState = {
                     count: 0,
                     itemsById: {}
                 };
 
+                /**
+                 * Funções auxiliares para manipulação do carrinho
+                 * Contém métodos HTTP, atualização de estado e controle de concorrência
+                 */
                 window.cartHelpers = {
+                    /**
+                     * Controle de concorrência - evita múltiplas requisições simultâneas
+                     * Chaves: 'p{productId}' para quantidade, 'p{productId}:rm' para remoção
+                     */
                     inFlight: {},
 
+                    /**
+                     * Faz requisições POST com CSRF token e headers apropriados
+                     */
                     post: function(url, data) {
                         return $.ajax({
                             url: url,
@@ -165,6 +188,9 @@
                         });
                     },
 
+                    /**
+                     * Faz requisições GET para buscar dados do servidor
+                     */
                     get: function(url) {
                         return $.ajax({
                             url: url,
@@ -175,6 +201,9 @@
                         });
                     },
 
+                    /**
+                     * Atualiza o estado global do carrinho com dados do servidor
+                     */
                     setState: function(data) {
                         window.cartState.count = data?.count ?? 0;
                         window.cartState.itemsById = {};
@@ -185,6 +214,9 @@
                         }
                     },
 
+                    /**
+                     * Atualiza o contador de itens no ícone do carrinho
+                     */
                     updateBadge: function(count) {
                         const $badge = $('#cart-count-badge');
                         if ($badge.length) {
@@ -193,6 +225,10 @@
                         }
                     },
 
+                    /**
+                     * Atualiza toda a interface do carrinho após mudanças
+                     * Estado global + badge + dispara eventos para outros componentes
+                     */
                     updateUI: function(data) {
                         this.setState(data);
                         this.updateBadge(window.cartState.count);
@@ -200,6 +236,10 @@
                         window.dispatchEvent(new CustomEvent('cart:updated', { detail: data }));
                     },
 
+                    /**
+                     * Busca o estado atual do carrinho do servidor
+                     * Chamado na inicialização para sincronizar com backend
+                     */
                     fetchSummary: function() {
                         return this.get(window.cartConfig.routes.summary).done((response) => {
                             if (response?.ok && response.data) {
@@ -209,9 +249,18 @@
                     }
                 };
 
+                /**
+                 * Configura event listeners para interação do usuário com o carrinho
+                 * Vincula ações dos botões aos métodos apropriados dos helpers
+                 */
                 $(document).ready(function() {
+                    // Sincroniza estado inicial do carrinho com o servidor
                     window.cartHelpers.fetchSummary();
 
+                    /**
+                     * Event listener para formulário de adicionar produto ao carrinho
+                     * Processa submit, faz requisição e atualiza UI
+                     */
                     $(document).on('submit', '#add-to-cart-form', function(e) {
                         e.preventDefault();
                         const $form = $(this);
@@ -244,6 +293,10 @@
                         });
                     });
 
+                    /**
+                     * Event listener para botões de alterar quantidade (+/-)
+                     * Controla concorrência para evitar múltiplas requisições simultâneas
+                     */
                     $(document).on('click', '.cart-qty', function(e) {
                         e.preventDefault();
                         const $btn = $(this);
@@ -279,6 +332,10 @@
                         });
                     });
 
+                    /**
+                     * Event listener para botões de remover item do carrinho
+                     * Usa chave única para controle de concorrência com remoções
+                     */
                     $(document).on('click', '.cart-remove', function(e) {
                         e.preventDefault();
                         const productId = parseInt($(this).data('product-id'), 10);
@@ -307,6 +364,10 @@
                         });
                     });
 
+                    /**
+                     * Event listener para botão de finalizar pedido (checkout)
+                     * Processa pedido e redireciona para página de pedidos
+                     */
                     $(document).on('click', '.cart-checkout', function(e) {
                         e.preventDefault();
 

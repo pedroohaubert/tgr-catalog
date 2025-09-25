@@ -25,18 +25,24 @@
             
             <div class="hidden sm:flex sm:items-center sm:ms-6">
                 @auth
-                
+
+                {{-- Componente do carrinho de compras com funcionalidades de adicionar, remover e limpar itens --}}
                 <div x-data="{
+                    {{-- Estado reativo do componente: visibilidade do dropdown, dados do carrinho, loading e modal de confirmação --}}
                     open: false,
                     summary: null,
                     loading: false,
                     showClearModal: false,
+
+                    {{-- Métodos do componente --}}
+                    {{-- Alterna visibilidade do dropdown e carrega dados quando aberto --}}
                     toggle() {
                         this.open = !this.open;
                         if(this.open) {
                             this.fetch();
                         }
                     },
+                    {{-- Busca dados do carrinho via API e atualiza o estado --}}
                     async fetch() {
                         this.loading = true;
                         try {
@@ -56,12 +62,16 @@
                             this.loading = false;
                         }
                     },
+                    {{-- Métodos para controle do modal de confirmação de limpeza --}}
+                    {{-- Exibe modal de confirmação para limpar carrinho --}}
                     confirmClear() {
                         this.showClearModal = true;
                     },
+                    {{-- Cancela e fecha modal de confirmação --}}
                     cancelClear() {
                         this.showClearModal = false;
                     },
+                    {{-- Executa limpeza completa do carrinho usando helpers globais --}}
                     async executeClear() {
                         this.showClearModal = false;
                         // Use the global cart helpers
@@ -82,6 +92,7 @@
                             $('.cart-clear').prop('disabled', false);
                         }
                     },
+                    {{-- Método de inicialização: carrega dados e configura event listeners --}}
                     init() {
                         // Load cart on page load
                         this.fetch();
@@ -109,34 +120,44 @@
                         }
                     }
                 }" class="relative me-4" x-init="init()" data-cart-dropdown>
+                    {{-- Botão do carrinho com ícone e badge de contagem --}}
                     <button x-on:click="toggle()" class="relative inline-flex items-center p-2 rounded-md text-gray-600 hover:text-gray-800">
-                        
+
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.25 3h1.386c.51 0 .955.343 1.085.836l.383 1.437M7.5 14.25h8.784a1.5 1.5 0 001.447-1.106l1.812-6.652a.75.75 0 00-.722-.942H5.104M7.5 14.25L5.104 5.25M7.5 14.25l-.597 2.389A1.5 1.5 0 008.361 18.75h7.278m0 0a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm-7.278 0a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
                         </svg>
+                        {{-- Badge mostrando quantidade de itens no carrinho --}}
                         <span id="cart-count-badge" x-show="summary?.data?.count > 0" x-text="summary?.data?.count" class="absolute -top-1 -right-1 text-[10px] bg-black text-white rounded-full px-1 min-w-[16px] text-center"></span>
                     </button>
+                    {{-- Dropdown do carrinho com lista de itens, total e ações --}}
                     <div x-cloak x-show="open" @click.outside="open=false" class="absolute right-0 mt-2 w-96 bg-white border border-gray-200 rounded-md shadow-lg z-50 p-3" data-orders-url="{{ route('orders.index') }}">
+                        {{-- Estado de carregamento --}}
                         <template x-if="loading">
                             <div class="text-sm text-gray-500">Carregando...</div>
                         </template>
                         <template x-if="!loading">
                             <div>
+                                {{-- Estado quando dados não estão disponíveis --}}
                                 <template x-if="!summary?.data">
                                     <div class="text-sm text-gray-500">Indisponível.</div>
                                 </template>
+                                {{-- Estado quando carrinho está vazio --}}
                                 <template x-if="summary?.data && (!summary.data.items || summary.data.items.length === 0)">
                                     <div class="text-sm text-gray-500 py-4 text-center">Carrinho vazio.</div>
                                 </template>
+                                {{-- Estado quando carrinho tem itens --}}
                                 <template x-if="summary?.data && summary.data.items && summary.data.items.length > 0">
                                     <div>
+                                        {{-- Lista rolável de itens do carrinho --}}
                                         <div class="max-h-64 overflow-auto">
                                             <template x-for="(item, index) in summary.data.items" :key="item.product_id">
+                                                {{-- Item individual do carrinho com nome, preço e controles --}}
                                                 <div class="py-2 flex items-start justify-between text-sm" :class="{ 'border-b border-gray-200': index < summary.data.items.length - 1 }">
                                                     <div class="pr-3">
                                                         <div class="font-medium text-gray-900" x-text="item.name"></div>
                                                         <div class="text-gray-500">R$ <span x-text="item.unit_price.toFixed(2).replace('.', ',')"></span></div>
                                                     </div>
+                                                    {{-- Controles de quantidade e remoção do item --}}
                                                     <div class="flex items-center gap-2">
                                                         <button class="cart-qty p-1 rounded border border-gray-300 text-gray-700 hover:bg-gray-50" data-action="decrease" :data-product-id="item.product_id" title="Diminuir">-</button>
                                                         <span class="text-gray-700 min-w-[1.5rem] text-center" x-text="item.quantity"></span>
@@ -150,10 +171,12 @@
                                                 </div>
                                             </template>
                                         </div>
+                                        {{-- Resumo do total do carrinho --}}
                                         <div class="flex items-center justify-between mt-3 text-sm">
                                             <span class="text-gray-600">Total</span>
                                             <span class="font-semibold" x-text="'R$ ' + Number(summary.data.total).toFixed(2).replace('.', ',')"></span>
                                         </div>
+                                        {{-- Botões de ação: limpar carrinho e finalizar pedido --}}
                                         <div class="mt-3 flex items-center gap-2">
                                             <button class="cart-clear flex-1 inline-flex justify-center items-center px-3 py-2 rounded-md border border-gray-300 text-gray-700 text-sm hover:bg-gray-50" x-on:click="confirmClear()">Limpar</button>
                                             <button class="cart-checkout flex-1 inline-flex justify-center items-center px-3 py-2 rounded-md bg-black text-white text-sm hover:bg-gray-800">Fechar pedido</button>
@@ -164,11 +187,15 @@
                         </template>
                     </div>
 
-                    
+
+                    {{-- Modal de confirmação para limpar o carrinho --}}
                     <div x-show="showClearModal" class="fixed inset-0 px-4 py-6 sm:px-0 z-50 flex items-center justify-center" style="display: none;" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+                        {{-- Overlay de fundo --}}
                         <div class="fixed inset-0 bg-gray-500 opacity-75" x-on:click="cancelClear()"></div>
+                        {{-- Conteúdo do modal --}}
                         <div class="relative mx-auto max-w-sm bg-white rounded-lg overflow-hidden shadow-xl">
                             <div class="p-6">
+                            {{-- Cabeçalho do modal com ícone de aviso --}}
                             <div class="flex items-center">
                                 <svg class="w-6 h-6 text-red-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
@@ -176,12 +203,14 @@
                                 <h3 class="text-lg font-medium text-gray-900">Limpar carrinho</h3>
                             </div>
 
+                            {{-- Mensagem de confirmação --}}
                             <div class="mt-4">
                                 <p class="text-sm text-gray-600">
                                     Tem certeza que deseja remover todos os itens do carrinho? Esta ação não pode ser desfeita.
                                 </p>
                             </div>
 
+                            {{-- Botões de ação do modal --}}
                             <div class="mt-6 flex justify-end space-x-3">
                                 <button x-on:click="cancelClear()" class="inline-flex justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                                     Cancelar

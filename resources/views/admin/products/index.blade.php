@@ -150,7 +150,6 @@
             }
 
             function bindHandlers() {
-                // Search functionality
                 const $searchInput = $('#searchProducts');
                 const $clearButton = $('#clearSearchProducts');
 
@@ -179,7 +178,6 @@
                     $searchInput.val('').trigger('input');
                 });
 
-                // Toggle Active Status (delegated)
                 $(document).on('click', '.toggle-active', function() {
                     const $btn = $(this);
                     const productId = $btn.data('product-id');

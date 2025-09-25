@@ -127,16 +127,15 @@
 
     <script>
         $(document).ready(function() {
-            // Handle form submission
+
             $('#editProductForm').on('submit', function(e) {
                 const $form = $(this);
                 const $btn = $form.find('button[type=submit]');
-                
-                // Visual feedback
+
                 $btn.prop('disabled', true);
                 $btn.html('Salvando...');
                 
-                return true; // Allow normal form submission
+                return true;
             });
 
         });

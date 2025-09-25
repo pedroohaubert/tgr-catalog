@@ -116,7 +116,6 @@
 
     <script>
         $(document).ready(function() {
-            // Auto-generate slug from name
             let slugManuallyChanged = false;
             
             $('#slug').on('input', function() {
@@ -135,16 +134,14 @@
                 }
             });
 
-            // Handle form submission
             $('#createProductForm').on('submit', function(e) {
                 const $form = $(this);
                 const $btn = $form.find('button[type=submit]');
                 
-                // Visual feedback
                 $btn.prop('disabled', true);
                 $btn.html('Criando...');
                 
-                return true; // Allow normal form submission
+                return true;
             });
         });
     </script>
