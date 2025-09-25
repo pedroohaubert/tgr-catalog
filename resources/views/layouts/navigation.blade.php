@@ -101,7 +101,6 @@
                             this.fetch();
                         });
 
-                        // Initialize mobile cart count
                         if (this.summary?.data?.count !== undefined) {
                             const mobileCount = document.getElementById('mobile-cart-count');
                             if (mobileCount) {

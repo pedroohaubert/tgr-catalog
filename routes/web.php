@@ -16,9 +16,11 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
 Route::get('/produtos', [ProductController::class, 'page'])->name('products.index');
 Route::get('/produtos/busca', [ProductController::class, 'index'])->name('products.search');
 Route::get('/produtos/{slug}', [ProductController::class, 'show'])->name('products.show');
+
 Route::middleware(['auth'])->group(function () {
     Route::get('/carrinho/summary', [CartController::class, 'summary'])->name('cart.summary');
     Route::post('/carrinho/add', [CartController::class, 'add'])->name('cart.add');
@@ -28,10 +30,12 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 });
+
 Route::middleware(['auth'])->group(function () {
     Route::get('/meus-pedidos', [OrderController::class, 'index'])->name('orders.index');
     Route::post('/meus-pedidos/{order}/cancelar', [OrderController::class, 'cancel'])->name('orders.cancel');
 });
+
 Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
     Route::get('/products', [AdminProductController::class, 'index'])
         ->middleware('can:viewAny,App\\Models\\Product')->name('products.index');

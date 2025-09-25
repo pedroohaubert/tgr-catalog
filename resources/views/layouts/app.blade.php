@@ -17,7 +17,6 @@
         
         
         <script>
-            // Toast notification system
             let toastTimeout;
             function showToast(message, type = 'success') {
                 hideToast();
@@ -31,17 +30,16 @@
 
                 document.body.appendChild(toast);
 
-                // Trigger animation
+                
                 setTimeout(() => {
                     toast.classList.remove('translate-y-[100%]');
                 }, 10);
 
-                // Auto hide after 3 seconds
+               
                 toastTimeout = setTimeout(() => {
                     hideToast();
                 }, 3000);
 
-                // Allow manual dismiss
                 toast.addEventListener('click', hideToast);
             }
 
@@ -58,7 +56,6 @@
                 }
             }
 
-            // Global error handler for AJAX requests
             window.handleAjaxError = function(xhr, defaultMessage = 'Erro ao processar requisição') {
                 let msg = defaultMessage;
                 
@@ -70,7 +67,6 @@
                 } else if (xhr.status === 404) {
                     msg = 'Recurso não encontrado';
                 } else if (xhr.status === 409) {
-                    // Conflito - geralmente relacionado a regras de negócio
                     if (xhr.responseJSON?.error?.details) {
                         const details = xhr.responseJSON.error.details;
                         if (details.insufficient_stock && Array.isArray(details.insufficient_stock)) {
@@ -88,7 +84,6 @@
                     msg = 'Token CSRF inválido. Por favor, recarregue a página';
                     setTimeout(() => window.location.reload(), 2000);
                 } else if (xhr.status === 422) {
-                    // Erro de validação
                     if (xhr.responseJSON?.errors) {
                         const errors = Object.values(xhr.responseJSON.errors).flat();
                         msg = errors.join('. ') || 'Dados inválidos';
@@ -136,9 +131,7 @@
 
         
         <script>
-            // Global cart configuration - will be initialized after jQuery is loaded
             window.initCart = function() {
-                // Global cart configuration
                 window.cartConfig = {
                     routes: {
                         summary: '{{ route('cart.summary') }}',
@@ -151,13 +144,11 @@
                     csrfToken: document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 };
 
-                // Lightweight global state (kept in sync from server responses)
                 window.cartState = {
                     count: 0,
                     itemsById: {}
                 };
 
-                // Global cart helper functions
                 window.cartHelpers = {
                     inFlight: {},
 
@@ -203,11 +194,9 @@
                     },
 
                     updateUI: function(data) {
-                        // Update local state and badge immediately
                         this.setState(data);
                         this.updateBadge(window.cartState.count);
 
-                        // Notify Alpine cart component(s)
                         window.dispatchEvent(new CustomEvent('cart:updated', { detail: data }));
                     },
 
@@ -220,12 +209,9 @@
                     }
                 };
 
-                // Cart event handlers
                 $(document).ready(function() {
-                    // Ensure badge is correct on every page load
                     window.cartHelpers.fetchSummary();
 
-                    // Add to cart (product detail page)
                     $(document).on('submit', '#add-to-cart-form', function(e) {
                         e.preventDefault();
                         const $form = $(this);
@@ -244,9 +230,7 @@
                         }).done(function(response) {
                             if (response.ok && response.data) {
                                 showToast('Produto adicionado ao carrinho!');
-                                // Reset quantity to 1
                                 $form.find('[name=quantity]').val(1);
-                                // Update UI and optionally open dropdown
                                 window.cartHelpers.updateUI(response.data);
                                 window.dispatchEvent(new CustomEvent('cart:open'));
                             } else {
@@ -260,7 +244,6 @@
                         });
                     });
 
-                    // Update quantity
                     $(document).on('click', '.cart-qty', function(e) {
                         e.preventDefault();
                         const $btn = $(this);
@@ -274,7 +257,6 @@
                         window.cartHelpers.inFlight[key] = true;
                         $('.cart-qty[data-product-id="' + productId + '"]').prop('disabled', true);
 
-                        // Use last known state (fallback to DOM if not present yet)
                         const currentFromState = window.cartState.itemsById[productId]?.quantity;
                         const $qty = $btn.siblings('span');
                         const currentFromDom = parseInt($qty.text(), 10) || 1;
@@ -297,7 +279,6 @@
                         });
                     });
 
-                    // Remove item
                     $(document).on('click', '.cart-remove', function(e) {
                         e.preventDefault();
                         const productId = parseInt($(this).data('product-id'), 10);
@@ -326,7 +307,6 @@
                         });
                     });
 
-                    // Checkout
                     $(document).on('click', '.cart-checkout', function(e) {
                         e.preventDefault();
 
