@@ -4,17 +4,22 @@ Este projeto inclui uma configuração Docker completa para desenvolvimento loca
 
 ## 🚀 Primeira execução
 
+Para iniciar o projeto pela primeira vez, simplesmente execute:
+
 ```bash
 make up
 ```
 
-Isso irá:
+**É isso!** O Docker irá automaticamente:
 - Construir as imagens Docker
-- Instalar dependências do Composer
-- Criar/configurar o arquivo `.env`
-- Executar migrations
-- Executar seeders
+- Instalar dependências do Composer e Node.js
+- Criar/configurar o arquivo `.env` a partir do `.env.example`
+- Configurar a chave da aplicação
+- Executar migrations do banco de dados
+- Executar seeders com dados iniciais
 - Iniciar servidor Laravel (porta 8000) e Vite (porta 5173)
+
+A primeira execução pode levar alguns minutos devido à instalação das dependências.
 
 ## 📋 Comandos disponíveis
 
@@ -42,7 +47,8 @@ make artisan CMD="route:list"
 
 ### Reset completo
 ```bash
-make reset-db    # Para containers, remove DB/bootstrap e sobe novamente
+make reset-db       # Para containers, remove DB/bootstrap e sobe novamente
+make fresh-install  # Reset completo: remove vendor, node_modules, DB e rebuild tudo
 ```
 
 ## 🌐 URLs de acesso

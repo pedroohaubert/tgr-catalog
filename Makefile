@@ -29,4 +29,9 @@ reset-db: down
 	rm -f storage/app/.bootstrapped database/database.sqlite
 	$(MAKE) up
 
-.PHONY: up down shell artisan migrate seed fresh test tinker reset-db
+fresh-install: down
+	rm -rf vendor node_modules storage/app/.bootstrapped database/database.sqlite
+	docker compose build --no-cache
+	$(MAKE) up
+
+.PHONY: up down shell artisan migrate seed fresh test tinker reset-db fresh-install
